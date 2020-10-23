@@ -5,20 +5,15 @@ void lecturaConfiguracion(int *conf, Configuracion *configuracion) {
     char letra, buffer[TEST];
 
     i = 0;
-
-    read(*conf, &letra, sizeof(letra));
+    read(*conf, &letra, sizeof(char));
     configuracion->nombre[i] = letra;
     i++;
-    read(*conf, &letra, sizeof(letra));
-    sprintf(buffer, "%c", letra);
-    write(1, buffer, sizeof(buffer) * strlen(buffer));
+    read(*conf, &letra, sizeof(char));
     while (letra != '\n') {
         configuracion->nombre[i] = letra;
         i++;
-        read(*conf, &letra, sizeof(letra));
-        sprintf(buffer, "%c", letra);
-        write(1, buffer, sizeof(buffer) * strlen(buffer));
+        read(*conf, &letra, sizeof(char));
     }
     configuracion->nombre[i] = '\0';
-    write(1, configuracion->nombre, sizeof(configuracion->nombre));
+    write(1, configuracion->nombre, sizeof(char) * strlen(configuracion->nombre));
 }
