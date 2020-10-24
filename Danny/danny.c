@@ -11,6 +11,7 @@
 
 int main(int argc, char *argv[]) {
     int conf;
+    char buffer[NOMBRE];
     Configuracion *configuracion;
 
     configuracion = (Configuracion *) malloc(sizeof(Configuracion));
@@ -26,6 +27,17 @@ int main(int argc, char *argv[]) {
               sizeof("ERROR: No es correcto el path del archivo de configuración\n"));
     } else {
         lecturaConfiguracion(&conf, configuracion);
+        write(1, "\nStarting Danny...\n\n", sizeof(char) * strlen("\nStarting Danny...\n\n"));
+
+        //Aqui comença un bucle
+        sprintf(buffer, "$%s:\n", configuracion->nombre);
+        write(1, buffer, sizeof(char) * strlen(buffer));
+        write(1, "Testing...\n", sizeof(char) * strlen("Testing...\n"));
+        /*
+        int test;
+        test=execlp("ls","ls","-af",configuracion->path,NULL);
+        printf("test: %d\n",test);
+         */
     }
     close(conf);
     free(configuracion);
