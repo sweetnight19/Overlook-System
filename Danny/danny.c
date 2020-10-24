@@ -3,7 +3,6 @@
  */
 
 //Librerias del sistema
-#include <stdio.h>
 #include <fcntl.h>
 #include <stdlib.h>
 
@@ -26,12 +25,6 @@ int main(int argc, char *argv[]) {
         write(1, "ERROR: No es correcto el path del archivo de configuración\n",
               sizeof("ERROR: No es correcto el path del archivo de configuración\n"));
     } else {
-        /*
-        char letra,buffer[TEST];
-        read(conf, &letra, sizeof(char ));
-        sprintf(buffer,"letra: %c",letra);
-        write(1, buffer, sizeof(char )*strlen(buffer));
-        */
         lecturaConfiguracion(&conf, configuracion);
     }
     close(conf);

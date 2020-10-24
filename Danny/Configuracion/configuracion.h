@@ -6,19 +6,20 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 //Constantes
 #define NOMBRE 100
-#define TEST 500
+#define IP 16
 
 //Tipos propios
 typedef struct {
     char nombre[NOMBRE];
     char *path;
     int tiempo;
-    char IPJack;
+    char IPJack[IP];
     int portJack;
-    char IPWendy;
+    char IPWendy[IP];
     int portWendy;
 } Configuracion;
 
