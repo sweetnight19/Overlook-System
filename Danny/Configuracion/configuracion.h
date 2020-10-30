@@ -23,6 +23,43 @@ typedef struct {
     int portWendy;
 } Configuracion;
 
+typedef struct {
+    char fecha[NOMBRE];
+    char hora[NOMBRE];
+    char temperatura[NOMBRE];
+    char humedad[NOMBRE];
+    char presionAtmosferica[NOMBRE];
+    char precipitacion[NOMBRE];
+} Datos;
+
 void lecturaConfiguracion(int *conf, Configuracion *configuracion);
+
+void lecturaTXT(int *txtfd, Datos *datos);
+
+void lecturaNom(int *conf, Configuracion *configuracion);
+
+void lecturaPath(int *conf, Configuracion *configuracion);
+
+void lecturaTiempo(int *conf, Configuracion *configuracion);
+
+void lecturaIPJack(int *conf, Configuracion *configuracion);
+
+void lecturaPuertoJack(int *conf, Configuracion *configuracion);
+
+void lecturaIPWendy(int *conf, Configuracion *configuracion);
+
+void lecturaPuertoWendy(int *conf, Configuracion *configuracion);
+
+void lecturaFecha(int *txtfd, Datos *datos);
+
+void lecturaHora(int *txtfd, Datos *datos);
+
+void lecturaTemperatura(int *txtfd, Datos *datos);
+
+void lecturaHumedad(int *txtfd, Datos *datos);
+
+void lecturaAtmosferica(int *txtfd, Datos *datos);
+
+void lecturaPrecipitacion(int *txtfd, Datos *datos);
 
 #endif
