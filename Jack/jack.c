@@ -10,6 +10,7 @@
 
 //Librerias propias
 #include "configuracion.h"
+#include "servidor.h"
 
 
 Configuracion *configuracion;
@@ -26,17 +27,22 @@ int main(int argc, char *argv[]){
         free(configuracion);
         return EXIT_FAILURE;
     }
-    conf = open(argv[1], O_RDONLY);
+
     //Comprobamos que exista el fichero de configuracion
+    conf = open(argv[1], O_RDONLY);
     if (conf < 0) {
         write(STDOUT_FILENO, "ERROR: No es correcto el path del archivo de configuración\n",
               sizeof("ERROR: No es correcto el path del archivo de configuración\n"));
     } else {
         //Leemos el fichero de configuracion
         lecturaConfiguracion(&conf, configuracion);
+
         write(STDOUT_FILENO,"\nStarting Jack...\n\n",sizeof("\nStarting Jack...\n\n"));
         write(STDOUT_FILENO,"$Jack:\n",sizeof("$Jack:\n"));
         write(STDOUT_FILENO,"Waiting...\n",sizeof("Waiting...\n"));
+
+        configurarServidor(configuracion->portJack);
+        printf("\nDebug: ERROR2\n");
     }
     return 0;
 }

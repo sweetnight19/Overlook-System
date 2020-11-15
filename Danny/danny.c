@@ -10,7 +10,8 @@
 #include <dirent.h>
 
 //Librerias propias
-#include "Configuracion/configuracion.h"
+#include "configuracion.h"
+#include "client.h"
 
 
 #define BUFFER 300
@@ -155,6 +156,7 @@ int main(int argc, char *argv[]) {
         sprintf(buffer, "$%s:\n", configuracion->nombre);
         write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
         write(STDOUT_FILENO, "\nEsperando una acción...\n", sizeof("\nEsperando una acción...\n"));
+        configurarCliente(configuracion->IPJack,configuracion->portJack);
         while (1) {
         }
     }
