@@ -16,11 +16,14 @@
 
 Configuracion *configuracion;
 Datos *datos;
+int sockfd;
 
 void signalHandler() {
 
-    write(STDOUT_FILENO, "\n\nDisconnecting Danny...\n", sizeof("\n\nDisconnecting Danny...\n"));
+    write(STDOUT_FILENO, "\nDisconnecting Danny...\n", sizeof("\nDisconnecting Danny...\n"));
+    write(STDOUT_FILENO, "Disconnecting Jack...", sizeof("Disconnecting Jack..."));
     free(configuracion->path);
+    close(sockfd);
     free(configuracion);
     free(datos);
     raise(SIGINT);
@@ -49,17 +52,26 @@ int main(int argc, char *argv[]) {
         write(STDOUT_FILENO, "ERROR: No es correcto el path del archivo de configuración\n",
               sizeof("ERROR: No es correcto el path del archivo de configuración\n"));
     } else {
+        write(STDOUT_FILENO, "\nStarting Danny...\n", sizeof(char) * strlen("\nStarting Danny...\n\n"));
         //Leemos el fichero de configuracion
         lecturaConfiguracion(&conf, configuracion);
         close(conf);
-        write(STDOUT_FILENO, "\nStarting Danny...\n\n", sizeof(char) * strlen("\nStarting Danny...\n\n"));
+
+        //Conectamos con el servidor
+        write(STDOUT_FILENO, "Connecting Jack...\n\n", sizeof(char) * strlen("Connecting Jack...\n\n"));
+        configurarCliente((char *) configuracion->IPJack, configuracion->portJack, sockfd);
 
         //Leemos el fichero .txt en el directorio indicado en el fichero de configuracion
         comprobarFichero(configuracion, datos);
+
+        //Enviamos la trama
+        write(STDOUT_FILENO, "Data sent\n", sizeof(char) * strlen("Data sent\n"));
+
         sprintf(buffer, "$%s:\n", configuracion->nombre);
         write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
-        write(STDOUT_FILENO, "\nEsperando una acción...\n", sizeof("\nEsperando una acción...\n"));
-        configurarCliente((char *) configuracion->IPJack, configuracion->portJack);
+        while (1){
+
+        }
     }
     free(datos);
     free(configuracion->path);

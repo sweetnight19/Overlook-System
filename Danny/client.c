@@ -46,17 +46,15 @@ main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
 }
 */
-void configurarCliente(char IPJack[IP], int portJack) {
-    int sockfd;
+void configurarCliente(char IPJack[IP], int portJack, int sockfd) {
     struct sockaddr_in servaddr;
 
-    printf("\nIPJack: %s\n",IPJack);
     // socket create and varification
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
         printf("socket creation failed...\n");
     } else {
-        printf("Socket successfully created..\n");
+        //printf("Socket successfully created..\n");
         bzero(&servaddr, sizeof(servaddr));
 
         // assign IP, PORT
@@ -68,9 +66,6 @@ void configurarCliente(char IPJack[IP], int portJack) {
         if (connect(sockfd, (void *) &servaddr, sizeof(servaddr)) != 0) {
             printf("connection with the server failed...\n");
         } else {
-            printf("connected to the server..\n");
         }
     }
-    // close the socket
-    close(sockfd);
 }

@@ -67,6 +67,7 @@ void lecturaIPJack(int *conf, Configuracion *configuracion) {
     int i;
     char letra;
 
+    read(*conf, &letra, sizeof(char));
     i = 0;
     read(*conf, &letra, sizeof(char));
     configuracion->IPJack[i] = letra;
@@ -87,7 +88,7 @@ void lecturaPuertoJack(int *conf, Configuracion *configuracion) {
     read(*conf, &letra, sizeof(char));
     configuracion->portJack = (configuracion->portJack) * 10 + letra - '0';
     read(*conf, &letra, sizeof(char));
-    while (letra != '\n') {
+    while (letra >= '0' && letra <= '9') {
         configuracion->portJack = (configuracion->portJack) * 10 + letra - '0';
         read(*conf, &letra, sizeof(char));
     }
@@ -149,8 +150,8 @@ void lecturaFecha(int *txtfd, Datos *datos) {
         read(*txtfd, &letra, sizeof(char));
     }
     datos->fecha[i] = '\0';
-    write(STDOUT_FILENO,"\n",sizeof("\n"));
-    write(STDOUT_FILENO,datos->fecha,sizeof(char)*strlen(datos->fecha));
+    write(STDOUT_FILENO, "\n", sizeof("\n"));
+    write(STDOUT_FILENO, datos->fecha, sizeof(char) * strlen(datos->fecha));
 }
 
 void lecturaHora(int *txtfd, Datos *datos) {
@@ -168,8 +169,8 @@ void lecturaHora(int *txtfd, Datos *datos) {
         read(*txtfd, &letra, sizeof(char));
     }
     datos->hora[i] = '\0';
-    write(STDOUT_FILENO,"\n",sizeof("\n"));
-    write(STDOUT_FILENO,datos->hora,sizeof(char)*strlen(datos->hora));
+    write(STDOUT_FILENO, "\n", sizeof("\n"));
+    write(STDOUT_FILENO, datos->hora, sizeof(char) * strlen(datos->hora));
 }
 
 void lecturaTemperatura(int *txtfd, Datos *datos) {
@@ -187,8 +188,8 @@ void lecturaTemperatura(int *txtfd, Datos *datos) {
         read(*txtfd, &letra, sizeof(char));
     }
     datos->temperatura[i] = '\0';
-    write(STDOUT_FILENO,"\n",sizeof("\n"));
-    write(STDOUT_FILENO,datos->temperatura,sizeof(char)*strlen(datos->temperatura));
+    write(STDOUT_FILENO, "\n", sizeof("\n"));
+    write(STDOUT_FILENO, datos->temperatura, sizeof(char) * strlen(datos->temperatura));
 }
 
 void lecturaHumedad(int *txtfd, Datos *datos) {
@@ -206,8 +207,8 @@ void lecturaHumedad(int *txtfd, Datos *datos) {
         read(*txtfd, &letra, sizeof(char));
     }
     datos->humedad[i] = '\0';
-    write(STDOUT_FILENO,"\n",sizeof("\n"));
-    write(STDOUT_FILENO,datos->humedad,sizeof(char)*strlen(datos->humedad));
+    write(STDOUT_FILENO, "\n", sizeof("\n"));
+    write(STDOUT_FILENO, datos->humedad, sizeof(char) * strlen(datos->humedad));
 }
 
 void lecturaAtmosferica(int *txtfd, Datos *datos) {
@@ -225,31 +226,32 @@ void lecturaAtmosferica(int *txtfd, Datos *datos) {
         read(*txtfd, &letra, sizeof(char));
     }
     datos->presionAtmosferica[i] = '\0';
-    write(STDOUT_FILENO,"\n",sizeof("\n"));
-    write(STDOUT_FILENO,datos->presionAtmosferica,sizeof(char)*strlen(datos->presionAtmosferica));
+    write(STDOUT_FILENO, "\n", sizeof("\n"));
+    write(STDOUT_FILENO, datos->presionAtmosferica, sizeof(char) * strlen(datos->presionAtmosferica));
 
 }
 
-void lecturaPrecipitacion(int *txtfd, Datos *datos){
-    int i;
+void lecturaPrecipitacion(int *txtfd, Datos *datos) {
+    int i, byte;
     char letra;
 
     i = 0;
     read(*txtfd, &letra, sizeof(char));
     datos->precipitacion[i] = letra;
     i++;
-    read(*txtfd, &letra, sizeof(char));
-    while (letra != '\n') {
+    byte = read(*txtfd, &letra, sizeof(char));
+    while (byte > 0) {
         datos->precipitacion[i] = letra;
         i++;
-        read(*txtfd, &letra, sizeof(char));
+        byte = read(*txtfd, &letra, sizeof(char));
     }
     datos->precipitacion[i] = '\0';
-    write(STDOUT_FILENO,"\n",sizeof("\n"));
-    write(STDOUT_FILENO,datos->precipitacion,sizeof(char)*strlen(datos->precipitacion));
+    write(STDOUT_FILENO, "\n", sizeof("\n"));
+    write(STDOUT_FILENO, datos->precipitacion, sizeof(char) * strlen(datos->precipitacion));
+    write(STDOUT_FILENO, "\n", sizeof(char) * strlen("\n"));
 }
 
-void comprobarFichero(Configuracion *configuracion,Datos *datos){
+void comprobarFichero(Configuracion *configuracion, Datos *datos) {
     int numArchivos, txtfd, hayTXT;
     char buffer[BUFFER], archivoTXT[BUFFER];
     DIR *directorio = NULL;

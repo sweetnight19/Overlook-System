@@ -10,7 +10,7 @@ void configurarServidor(int portJack) {
     struct sockaddr_in s_addr;
 
     port = portJack;
-
+    printf("Port: %d\n",portJack);
     sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sockfd < 0) {
         perror("socket TCP");
