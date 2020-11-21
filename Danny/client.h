@@ -14,6 +14,6 @@
 #include <unistd.h>
 #include "configuracion.h"
 
-void configurarCliente(char IPJack,int portJack);
+void configurarCliente(char IPJack[IP],int portJack);
 
 #endif
