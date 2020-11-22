@@ -6,11 +6,13 @@
 
 void configurarServidor(int portJack) {
     uint16_t port;
-    int sockfd;
+    int sockfd, i;
     struct sockaddr_in s_addr;
-    char buffer[TRAMA];
-    //char origen[14],tipo,nombreEstacion[100];
+    char buffer[TRAMA], buffer2[TRAMA], jack[5], origen[ORIGEN], conexionOK[12], conexionKO[12];
 
+    strcpy(jack, "JACK");
+    strcpy(conexionOK, "CONNEXIO OK");
+    strcpy(conexionKO, "ERROR");
     port = portJack;
     printf("Port: %d\n", portJack);
     sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -41,22 +43,43 @@ void configurarServidor(int portJack) {
             exit(EXIT_FAILURE);
         }
         printf("New connection from %s:%hu\n", inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
-        /*
-        for (int i = 0; i < 14; ++i) {
-            read(newsock,&origen[i],sizeof(char ));
-        }
-        printf("origen: %s\n", origen);
-        read(newsock,&tipo,sizeof(char ));
-        printf("tipo de datos: %c\n",tipo);
-        for (int i = 0; i < 100; ++i) {
-            read(newsock,&nombreEstacion[i],sizeof(char ));
-        }
-        printf("nombre: %s\n",nombreEstacion);
-        */
         read(newsock, buffer, TRAMA);
-        for (int i = 0; i < TRAMA; ++i) {
-            printf("%d:%c\n", i, buffer[i]);
+        while (buffer[14] != 'Q') {
+            for (int i = 0; i < ORIGEN; ++i) {
+                origen[i] = buffer[i];
+            }
+            for (int i = 0; i < strlen(jack); i++) {
+                buffer2[i] = jack[i];
+            }
+            for (int i = 1 + strlen(jack); i < 14; i++) {
+                buffer2[i] = '\0';
+            }
+            if (strcmp(origen, "DANNY") == 0 && buffer[14] == 'C') {
+                buffer2[14] = 'O';
+                i = 15;
+                for (int j = 0; i < TRAMA && j < strlen(conexionOK); i++, j++) {
+                    buffer2[i] = conexionOK[j];
+                }
+                for (int j = i; j < TRAMA; j++) {
+                    buffer2[j] = '\0';
+                }
+            } else {
+                buffer2[14] = 'E';
+                i = 15;
+                for (int j = 0; i < TRAMA && j < strlen(conexionKO); i++, j++) {
+                    buffer2[i] = conexionKO[j];
+                }
+                for (int j = i; j < TRAMA; j++) {
+                    buffer2[j] = '\0';
+                }
+            }
+            write(newsock, buffer2, TRAMA);
+            read(newsock, buffer, TRAMA);
+            if (buffer[14] == 'Q') {
+                write(STDOUT_FILENO, "\nTANCANT SOCKET...\n", sizeof("\nTANCANT SOCKET...\n"));
+                close(newsock);
+                raise(SIGINT);
+            }
         }
-        close(newsock);
     }
 }

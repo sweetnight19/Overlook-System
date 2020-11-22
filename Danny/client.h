@@ -16,6 +16,6 @@
 
 #define TRAMA 115
 
-void configurarCliente(char IPJack[IP], int portJack, int sockfd, char *nombre);
+void configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre);
 
 #endif

@@ -15,9 +15,13 @@
 #include <string.h>
 #include <strings.h>
 #include <unistd.h>
+#include <signal.h>
 
 //Librerias propias
 #include "configuracion.h"
+
+#define ORIGEN 14
+#define DATOS 100
 
 void configurarServidor(int portJack);
 

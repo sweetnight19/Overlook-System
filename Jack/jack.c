@@ -14,7 +14,7 @@
 
 Configuracion *configuracion;
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]) {
     int conf;
 
     configuracion = (Configuracion *) malloc(sizeof(Configuracion));
@@ -36,10 +36,9 @@ int main(int argc, char *argv[]){
         //Leemos el fichero de configuracion
         lecturaConfiguracion(&conf, configuracion);
 
-        write(STDOUT_FILENO,"\nStarting Jack...\n\n",sizeof("\nStarting Jack...\n\n"));
-        write(STDOUT_FILENO,"$Jack:\n",sizeof("$Jack:\n"));
-        write(STDOUT_FILENO,"Waiting...\n",sizeof("Waiting...\n"));
-
+        write(STDOUT_FILENO, "\nStarting Jack...\n\n", sizeof("\nStarting Jack...\n\n"));
+        write(STDOUT_FILENO, "$Jack:\n", sizeof("$Jack:\n"));
+        write(STDOUT_FILENO, "Waiting...\n", sizeof("Waiting...\n"));
         configurarServidor(configuracion->portJack);
     }
     return 0;

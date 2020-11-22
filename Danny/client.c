@@ -46,13 +46,14 @@ main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
 }
 */
-void configurarCliente(char IPJack[IP], int portJack, int sockfd, char *nombre) {
+void configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre) {
+    int i;
     struct sockaddr_in servaddr;
     char danny[6] = "DANNY", buffer[TRAMA];
 
     // socket create and varification
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd == -1) {
+    *sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (*sockfd == -1) {
         printf("socket creation failed...\n");
     } else {
         //printf("Socket successfully created..\n");
@@ -64,7 +65,7 @@ void configurarCliente(char IPJack[IP], int portJack, int sockfd, char *nombre) 
         servaddr.sin_port = htons(portJack);
 
         // connect the client socket to server socket
-        if (connect(sockfd, (void *) &servaddr, sizeof(servaddr)) != 0) {
+        if (connect(*sockfd, (void *) &servaddr, sizeof(servaddr)) != 0) {
             printf("connection with the server failed...\n");
         } else {
             for (int i = 0; i < strlen(danny - 1); i++) {
@@ -73,17 +74,21 @@ void configurarCliente(char IPJack[IP], int portJack, int sockfd, char *nombre) 
             for (int i = 1 + strlen(buffer); i < 14; i++) {
                 buffer[i] = '\0';
             }
+
             buffer[14] = 'C';
-            printf("Tipo de trama: %c + nombre: %s\n", buffer[14], nombre);
-            for (int j = 15, i = 0; j < TRAMA && i < strlen(nombre); j++, i++) {
-                buffer[j] = nombre[i];
+            i = 15;
+            for (int j = 0; i < TRAMA && j < strlen(nombre); i++, j++) {
+                buffer[i] = nombre[j];
             }
-            /*
-            for (int i = strlen(buffer); i < 114; ++i) {
-                buffer[i] = '\0';
+            for (int j = i; j < TRAMA; j++) {
+                buffer[j] = '\0';
             }
-            */
-            write(sockfd, buffer, sizeof(TRAMA));
+            write(*sockfd, buffer, TRAMA);
+            read(*sockfd, buffer, TRAMA);
+            for (int j = 15; buffer[j] != '\0'; j++) {
+                printf("%c", buffer[j]);
+            }
+            printf("\n");
         }
     }
 }

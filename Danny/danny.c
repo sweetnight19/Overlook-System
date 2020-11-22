@@ -19,9 +19,28 @@ Datos *datos;
 int sockfd;
 
 void signalHandler() {
+    int i;
+    char buffer[TRAMA], danny[6];
 
     write(STDOUT_FILENO, "\nDisconnecting Danny...\n", sizeof("\nDisconnecting Danny...\n"));
     write(STDOUT_FILENO, "Disconnecting Jack...", sizeof("Disconnecting Jack..."));
+    strcpy(danny, "DANNY");
+    for (int j = 0; j < strlen(danny - 1); j++) {
+        buffer[j] = danny[j];
+    }
+    for (int j = 1 + strlen(danny); j < 14; j++) {
+        buffer[j] = '\0';
+    }
+    buffer[14] = 'Q';
+    i = 15;
+    for (int j = 0; i < TRAMA && j < strlen(configuracion->nombre); i++, j++) {
+        buffer[i] = configuracion->nombre[j];
+    }
+    for (int j = i; j < TRAMA; j++) {
+        buffer[j] = '\0';
+    }
+    write(sockfd, buffer, TRAMA);
+
     free(configuracion->path);
     close(sockfd);
     free(configuracion);
@@ -59,7 +78,7 @@ int main(int argc, char *argv[]) {
 
         //Conectamos con el servidor
         write(STDOUT_FILENO, "Connecting Jack...\n\n", sizeof(char) * strlen("Connecting Jack...\n\n"));
-        configurarCliente((char *) configuracion->IPJack, configuracion->portJack, sockfd, configuracion->nombre);
+        configurarCliente((char *) configuracion->IPJack, configuracion->portJack, &sockfd, configuracion->nombre);
 
         //Leemos el fichero .txt en el directorio indicado en el fichero de configuracion
         comprobarFichero(configuracion, datos);
