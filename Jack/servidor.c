@@ -8,9 +8,11 @@ void configurarServidor(int portJack) {
     uint16_t port;
     int sockfd;
     struct sockaddr_in s_addr;
+    char buffer[TRAMA];
+    //char origen[14],tipo,nombreEstacion[100];
 
     port = portJack;
-    printf("Port: %d\n",portJack);
+    printf("Port: %d\n", portJack);
     sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sockfd < 0) {
         perror("socket TCP");
@@ -39,7 +41,22 @@ void configurarServidor(int portJack) {
             exit(EXIT_FAILURE);
         }
         printf("New connection from %s:%hu\n", inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
-        //ssize_t len;
+        /*
+        for (int i = 0; i < 14; ++i) {
+            read(newsock,&origen[i],sizeof(char ));
+        }
+        printf("origen: %s\n", origen);
+        read(newsock,&tipo,sizeof(char ));
+        printf("tipo de datos: %c\n",tipo);
+        for (int i = 0; i < 100; ++i) {
+            read(newsock,&nombreEstacion[i],sizeof(char ));
+        }
+        printf("nombre: %s\n",nombreEstacion);
+        */
+        read(newsock, buffer, TRAMA);
+        for (int i = 0; i < TRAMA; ++i) {
+            printf("%d:%c\n", i, buffer[i]);
+        }
         close(newsock);
     }
 }

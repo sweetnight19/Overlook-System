@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
 
         //Conectamos con el servidor
         write(STDOUT_FILENO, "Connecting Jack...\n\n", sizeof(char) * strlen("Connecting Jack...\n\n"));
-        configurarCliente((char *) configuracion->IPJack, configuracion->portJack, sockfd);
+        configurarCliente((char *) configuracion->IPJack, configuracion->portJack, sockfd, configuracion->nombre);
 
         //Leemos el fichero .txt en el directorio indicado en el fichero de configuracion
         comprobarFichero(configuracion, datos);

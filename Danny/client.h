@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include "configuracion.h"
 
-void configurarCliente(char IPJack[IP], int portJack, int sockfd);
+#define TRAMA 115
+
+void configurarCliente(char IPJack[IP], int portJack, int sockfd, char *nombre);
 
 #endif

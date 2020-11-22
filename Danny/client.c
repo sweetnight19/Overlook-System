@@ -46,8 +46,9 @@ main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
 }
 */
-void configurarCliente(char IPJack[IP], int portJack, int sockfd) {
+void configurarCliente(char IPJack[IP], int portJack, int sockfd, char *nombre) {
     struct sockaddr_in servaddr;
+    char danny[6] = "DANNY", buffer[TRAMA];
 
     // socket create and varification
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -66,6 +67,23 @@ void configurarCliente(char IPJack[IP], int portJack, int sockfd) {
         if (connect(sockfd, (void *) &servaddr, sizeof(servaddr)) != 0) {
             printf("connection with the server failed...\n");
         } else {
+            for (int i = 0; i < strlen(danny - 1); i++) {
+                buffer[i] = danny[i];
+            }
+            for (int i = 1 + strlen(buffer); i < 14; i++) {
+                buffer[i] = '\0';
+            }
+            buffer[14] = 'C';
+            printf("Tipo de trama: %c + nombre: %s\n", buffer[14], nombre);
+            for (int j = 15, i = 0; j < TRAMA && i < strlen(nombre); j++, i++) {
+                buffer[j] = nombre[i];
+            }
+            /*
+            for (int i = strlen(buffer); i < 114; ++i) {
+                buffer[i] = '\0';
+            }
+            */
+            write(sockfd, buffer, sizeof(TRAMA));
         }
     }
 }

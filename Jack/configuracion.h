@@ -10,6 +10,7 @@
 
 //Constantes
 #define IP 16
+#define TRAMA 115
 
 //Tipos propios
 typedef struct {

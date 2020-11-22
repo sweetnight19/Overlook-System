@@ -41,7 +41,6 @@ int main(int argc, char *argv[]){
         write(STDOUT_FILENO,"Waiting...\n",sizeof("Waiting...\n"));
 
         configurarServidor(configuracion->portJack);
-        printf("\nDebug: ERROR2\n");
     }
     return 0;
 }

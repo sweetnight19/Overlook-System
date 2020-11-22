@@ -16,6 +16,9 @@
 #include <strings.h>
 #include <unistd.h>
 
+//Librerias propias
+#include "configuracion.h"
+
 void configurarServidor(int portJack);
 
 #endif
