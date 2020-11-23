@@ -92,3 +92,48 @@ void configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre)
         }
     }
 }
+
+void enviarDatos(Datos *datos, int *sockfd) {
+    int j;
+    char danny[6], buffer[TRAMA];
+
+    strcpy(danny, "DANNY");
+    for (int i = 0; i < strlen(danny); i++) {
+        buffer[i] = danny[i];
+    }
+    for (int i = strlen(danny); i < 14; i++) {
+        buffer[i] = '\0';
+    }
+    buffer[14] = 'D';
+    j = 15;
+    for (int i = 0; i < strlen(datos->fecha); i++, j++) {
+        buffer[j] = datos->fecha[i];
+    }
+    buffer[j] = '#';
+    for (int i = 0; i < strlen(datos->hora); i++, j++) {
+        buffer[j] = datos->hora[i];
+    }
+    buffer[j] = '#';
+    for (int i = 0; i < strlen(datos->temperatura); i++, j++) {
+        buffer[j] = datos->temperatura[i];
+    }
+    buffer[j] = '#';
+    for (int i = 0; i < strlen(datos->humedad); i++, j++) {
+        buffer[j] = datos->humedad[i];
+    }
+    buffer[j] = '#';
+    for (int i = 0; i < strlen(datos->presionAtmosferica); i++, j++) {
+        buffer[j] = datos->presionAtmosferica[i];
+    }
+    buffer[j] = '#';
+    for (int i = 0; i < strlen(datos->precipitacion); i++, j++) {
+        buffer[j] = datos->precipitacion[i];
+    }
+    printf("enviant dades...\n");
+    write(*sockfd, buffer, TRAMA);
+    read(*sockfd, buffer, TRAMA);
+    for (int j = 15; buffer[j] != '\0'; j++) {
+        printf("%c", buffer[j]);
+    }
+    printf("\n");
+}

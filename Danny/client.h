@@ -18,4 +18,6 @@
 
 void configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre);
 
+void enviarDatos(Datos *datos, int *sockfd);
+
 #endif

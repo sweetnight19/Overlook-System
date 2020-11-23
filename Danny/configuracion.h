@@ -11,6 +11,12 @@
 
 //Constantes
 #define NOMBRE 100
+#define PRECIPITACION 4
+#define PRESSION 6
+#define HUMEDAD 3
+#define TEMPERATURA 5
+#define HORA 8
+#define FECHA 10
 #define IP 16
 #define BUFFER 300
 
@@ -26,12 +32,12 @@ typedef struct {
 } Configuracion;
 
 typedef struct {
-    char fecha[NOMBRE];
-    char hora[NOMBRE];
-    char temperatura[NOMBRE];
-    char humedad[NOMBRE];
-    char presionAtmosferica[NOMBRE];
-    char precipitacion[NOMBRE];
+    char fecha[FECHA];
+    char hora[HORA];
+    char temperatura[TEMPERATURA];
+    char humedad[HUMEDAD];
+    char presionAtmosferica[PRESSION];
+    char precipitacion[PRECIPITACION];
 } Datos;
 
 void lecturaConfiguracion(int *conf, Configuracion *configuracion);
