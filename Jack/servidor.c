@@ -46,25 +46,26 @@ void configurarServidor(int portJack) {
             perror("accept");
             exit(EXIT_FAILURE);
         }
-        printf("New connection from %s:%hu\n", inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
+        sprintf(buffer, "Nueva conexion desde %s:%hu\n", inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
+        write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
         read(newsock, buffer, TRAMA);
         while (buffer[14] != 'Q') {
             for (int i = 0; i < ORIGEN; ++i) {
                 origen[i] = buffer[i];
             }
-            for (int i = 0; i < strlen(jack); i++) {
+            for (int i = 0; i < (int) strlen(jack); i++) {
                 buffer2[i] = jack[i];
             }
-            for (int i = 1 + strlen(jack); i < 14; i++) {
+            for (int i = 1 + (int) strlen(jack); i < 14; i++) {
                 buffer2[i] = '\0';
             }
 
             //Responder a la trama de conexion
             if (strcmp(origen, "DANNY") == 0 && buffer[14] == 'C') {
-                printf("Enviant trama de connexio\n");
+                write(STDOUT_FILENO, "Enviando trama de connexion\n", sizeof("Enviando trama de connexion\n"));
                 buffer2[14] = 'O';
                 i = 15;
-                for (int j = 0; i < TRAMA && j < strlen(conexionOK); i++, j++) {
+                for (int j = 0; i < TRAMA && j < (int) strlen(conexionOK); i++, j++) {
                     buffer2[i] = conexionOK[j];
                 }
                 for (int j = i; j < TRAMA; j++) {
@@ -73,10 +74,11 @@ void configurarServidor(int portJack) {
                 enviat = 1;
             } else {
                 if (buffer[14] == 'C') {
-                    printf("Enviant trama de connexio\n");
+                    write(STDOUT_FILENO, "Enviando trama de connexion erronea\n",
+                          sizeof("Enviando trama de connexion erronea\n"));
                     buffer2[14] = 'E';
                     i = 15;
-                    for (int j = 0; i < TRAMA && j < strlen(conexionKO); i++, j++) {
+                    for (int j = 0; i < TRAMA && j < (int) strlen(conexionKO); i++, j++) {
                         buffer2[i] = conexionKO[j];
                     }
                     for (int j = i; j < TRAMA; j++) {
@@ -88,10 +90,10 @@ void configurarServidor(int portJack) {
 
             //Responder a la trama de datos
             if (strcmp(origen, "DANNY") == 0 && buffer[14] == 'D') {
-                printf("Enviant trama de dades\n");
+                write(STDOUT_FILENO, "Enviando trama de datos\n", sizeof("Enviando trama de datos\n"));
                 buffer2[14] = 'B';
                 i = 15;
-                for (int j = 0; i < TRAMA && j < strlen(dadesOK); i++, j++) {
+                for (int j = 0; i < TRAMA && j < (int) strlen(dadesOK); i++, j++) {
                     buffer2[i] = dadesOK[j];
                 }
                 for (int j = i; j < TRAMA; j++) {
@@ -100,10 +102,11 @@ void configurarServidor(int portJack) {
                 enviat = 1;
             } else {
                 if (buffer[14] == 'D') {
-                    printf("Enviant trama de dades\n");
+                    write(STDOUT_FILENO, "Enviando trama de datos erronea\n",
+                          sizeof("Enviando trama de datos erronea\n"));
                     buffer2[14] = 'K';
                     i = 15;
-                    for (int j = 0; i < TRAMA && j < strlen(dadesKO); i++, j++) {
+                    for (int j = 0; i < TRAMA && j < (int) strlen(dadesKO); i++, j++) {
                         buffer2[i] = dadesKO[j];
                     }
                     for (int j = i; j < TRAMA; j++) {
@@ -115,10 +118,10 @@ void configurarServidor(int portJack) {
 
             //Responder a la trama erronea
             if (enviat == 0) {
-                printf("Enviant trama erronea\n");
+                write(STDOUT_FILENO, "Enviando trama erronea\n", sizeof("Enviando trama erronea\n"));
                 buffer2[14] = 'Z';
                 i = 15;
-                for (int j = 0; i < TRAMA && j < strlen(error); i++, j++) {
+                for (int j = 0; i < TRAMA && j < (int) strlen(error); i++, j++) {
                     buffer2[i] = error[j];
                 }
                 for (int j = i; j < TRAMA; j++) {
@@ -130,7 +133,7 @@ void configurarServidor(int portJack) {
 
             //Trama control+c
             if (buffer[14] == 'Q') {
-                write(STDOUT_FILENO, "\nTANCANT SOCKET...\n", sizeof("\nTANCANT SOCKET...\n"));
+                write(STDOUT_FILENO, "\nCerrando servidor...\n", sizeof("\nCerrando servidor...\n"));
                 close(newsock);
                 raise(SIGINT);
             }

@@ -1,3 +1,6 @@
+/**
+ * @authors: David Marquet, Joan Casals
+ */
 #include "configuracion.h"
 
 void lecturaConfiguracion(int *conf, Configuracion *configuracion) {
@@ -281,17 +284,17 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos) {
                 } else {
                     //Nos apuntamos si hemos leido un fichero .txt
                     if (direntp->d_name[strlen(direntp->d_name) - 1] == 't' &&
-                        direntp->d_name[strlen(direntp->d_name) - 2] == 'x' &&
-                        direntp->d_name[strlen(direntp->d_name) - 3] == 't' &&
-                        direntp->d_name[strlen(direntp->d_name) - 4] == '.') {
+                            direntp->d_name[strlen(direntp->d_name) - 2] == 'x' &&
+                            direntp->d_name[strlen(direntp->d_name) - 3] == 't' &&
+                            direntp->d_name[strlen(direntp->d_name) - 4] == '.') {
                         numArchivos++;
                         hayTXT = 1;
                     }
                     //Nos apuntamos si hemos leido un fichero .jpg
                     if (direntp->d_name[strlen(direntp->d_name) - 1] == 'g' &&
-                        direntp->d_name[strlen(direntp->d_name) - 2] == 'p' &&
-                        direntp->d_name[strlen(direntp->d_name) - 3] == 'j' &&
-                        direntp->d_name[strlen(direntp->d_name) - 4] == '.') {
+                            direntp->d_name[strlen(direntp->d_name) - 2] == 'p' &&
+                            direntp->d_name[strlen(direntp->d_name) - 3] == 'j' &&
+                            direntp->d_name[strlen(direntp->d_name) - 4] == '.') {
                         numArchivos++;
                     }
                 }
@@ -307,7 +310,12 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos) {
 
                 //Volvemos a abrir el directorio para mirar los nombres de los ficheros y guardar el path
                 directorio = opendir(configuracion->path);
-                strcpy(archivoTXT, configuracion->path);
+                for (int i = 0; i < BUFFER; ++i) {
+                    archivoTXT[i] = '\0';
+                }
+                for (int i = 0; configuracion->path[i] != '\0'; ++i) {
+                    archivoTXT[i] = configuracion->path[i];
+                }
                 archivoTXT[strlen(archivoTXT)] = '/';
                 while ((direntp = readdir(directorio)) != NULL) {
                     //Buscamos el fichero .txt para guardar el path con su nombre y printamos el nombre

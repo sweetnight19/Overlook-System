@@ -1,3 +1,6 @@
+/**
+ * @authors: David Marquet, Joan Casals
+ */
 #ifndef DANNY_CLIENT_H
 #define DANNY_CLIENT_H
 
@@ -14,6 +17,7 @@
 #include <unistd.h>
 #include "configuracion.h"
 
+//Constantes
 #define TRAMA 115
 
 void configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre);

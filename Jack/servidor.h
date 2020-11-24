@@ -20,8 +20,8 @@
 //Librerias propias
 #include "configuracion.h"
 
+//Constantes
 #define ORIGEN 14
-#define DATOS 100
 
 void configurarServidor(int portJack);
 

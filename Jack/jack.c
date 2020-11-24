@@ -1,7 +1,6 @@
 /**
  * @authors: David Marquet, Joan Casals
  */
-
 //Librerias del sistema
 #include <fcntl.h>
 #include <stdlib.h>

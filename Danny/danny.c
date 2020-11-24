@@ -1,18 +1,15 @@
 /**
  * @authors: David Marquet, Joan Casals
  */
-
 //Librerias del sistema
 #include <fcntl.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <stdio.h>
 
-
 //Librerias propias
 #include "configuracion.h"
 #include "client.h"
-
 
 Configuracion *configuracion;
 Datos *datos;
@@ -25,15 +22,15 @@ void signalHandler() {
     write(STDOUT_FILENO, "\nDisconnecting Danny...\n", sizeof("\nDisconnecting Danny...\n"));
     write(STDOUT_FILENO, "Disconnecting Jack...", sizeof("Disconnecting Jack..."));
     strcpy(danny, "DANNY");
-    for (int j = 0; j < strlen(danny - 1); j++) {
+    for (int j = 0; j < (int) strlen(danny - 1); j++) {
         buffer[j] = danny[j];
     }
-    for (int j = 1 + strlen(danny); j < 14; j++) {
+    for (int j = 1 + (int) strlen(danny); j < 14; j++) {
         buffer[j] = '\0';
     }
     buffer[14] = 'Q';
     i = 15;
-    for (int j = 0; i < TRAMA && j < strlen(configuracion->nombre); i++, j++) {
+    for (int j = 0; i < TRAMA && j < (int) strlen(configuracion->nombre); i++, j++) {
         buffer[i] = configuracion->nombre[j];
     }
     for (int j = i; j < TRAMA; j++) {
@@ -85,11 +82,11 @@ int main(int argc, char *argv[]) {
 
         //Enviamos la trama
         enviarDatos(datos, &sockfd);
-        write(STDOUT_FILENO, "Data sent\n", sizeof(char) * strlen("Data sent\n"));
+        //write(STDOUT_FILENO, "Data sent\n", sizeof(char) * strlen("Data sent\n"));
 
         sprintf(buffer, "$%s:\n", configuracion->nombre);
         write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
-        while (1){
+        while (1) {
 
         }
     }

@@ -1,3 +1,7 @@
+/**
+ * @authors: David Marquet, Joan Casals
+ */
+
 #include "configuracion.h"
 
 void lecturaConfiguracion(int *conf, Configuracion *configuracion) {

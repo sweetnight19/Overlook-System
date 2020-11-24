@@ -1,3 +1,7 @@
+/**
+ * @authors: David Marquet, Joan Casals
+ */
+
 #ifndef DANNY_CONFIGURACION_H
 #define DANNY_CONFIGURACION_H
 
