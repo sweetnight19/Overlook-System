@@ -4,8 +4,6 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/configuracion.c" "C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Danny/cmake-build-debug/CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.obj"
-  "C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/jack.c" "C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Danny/cmake-build-debug/CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.obj"
   "C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Danny/configuracion.c" "C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Danny/cmake-build-debug/CMakeFiles/Danny.dir/configuracion.c.obj"
   "C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Danny/danny.c" "C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Danny/cmake-build-debug/CMakeFiles/Danny.dir/danny.c.obj"
   )

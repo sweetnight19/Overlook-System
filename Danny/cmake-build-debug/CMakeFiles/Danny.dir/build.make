@@ -102,51 +102,21 @@ CMakeFiles/Danny.dir/configuracion.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Danny.dir/configuracion.c.s"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Danny\configuracion.c" -o CMakeFiles\Danny.dir\configuracion.c.s
 
-CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.obj: CMakeFiles/Danny.dir/flags.make
-CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.obj: C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas\ operativos/Practica/Overlook-System/Jack/jack.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Danny\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.obj"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\Danny.dir\5af4338f5c6aba915b835055c81c9edc\GTAS\Sistemas_operativos\Practica\Overlook-System\Jack\jack.c.obj   -c "C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Jack\jack.c"
-
-CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.i"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Jack\jack.c" > CMakeFiles\Danny.dir\5af4338f5c6aba915b835055c81c9edc\GTAS\Sistemas_operativos\Practica\Overlook-System\Jack\jack.c.i
-
-CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.s"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Jack\jack.c" -o CMakeFiles\Danny.dir\5af4338f5c6aba915b835055c81c9edc\GTAS\Sistemas_operativos\Practica\Overlook-System\Jack\jack.c.s
-
-CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.obj: CMakeFiles/Danny.dir/flags.make
-CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.obj: C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas\ operativos/Practica/Overlook-System/Jack/configuracion.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Danny\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.obj"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\Danny.dir\5af4338f5c6aba915b835055c81c9edc\GTAS\Sistemas_operativos\Practica\Overlook-System\Jack\configuracion.c.obj   -c "C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Jack\configuracion.c"
-
-CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.i"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Jack\configuracion.c" > CMakeFiles\Danny.dir\5af4338f5c6aba915b835055c81c9edc\GTAS\Sistemas_operativos\Practica\Overlook-System\Jack\configuracion.c.i
-
-CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.s"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Jack\configuracion.c" -o CMakeFiles\Danny.dir\5af4338f5c6aba915b835055c81c9edc\GTAS\Sistemas_operativos\Practica\Overlook-System\Jack\configuracion.c.s
-
 # Object files for target Danny
 Danny_OBJECTS = \
 "CMakeFiles/Danny.dir/danny.c.obj" \
-"CMakeFiles/Danny.dir/configuracion.c.obj" \
-"CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.obj" \
-"CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.obj"
+"CMakeFiles/Danny.dir/configuracion.c.obj"
 
 # External object files for target Danny
 Danny_EXTERNAL_OBJECTS =
 
 Danny.exe: CMakeFiles/Danny.dir/danny.c.obj
 Danny.exe: CMakeFiles/Danny.dir/configuracion.c.obj
-Danny.exe: CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.obj
-Danny.exe: CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.obj
 Danny.exe: CMakeFiles/Danny.dir/build.make
 Danny.exe: CMakeFiles/Danny.dir/linklibs.rsp
 Danny.exe: CMakeFiles/Danny.dir/objects1.rsp
 Danny.exe: CMakeFiles/Danny.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Danny\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Linking C executable Danny.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Danny\cmake-build-debug\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Linking C executable Danny.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\Danny.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

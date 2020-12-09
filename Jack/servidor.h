@@ -22,6 +22,7 @@
 
 //Constantes
 #define ORIGEN 14
+#define NUM_CLIENTES 100
 
 void configurarServidor(int portJack);
 

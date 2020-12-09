@@ -93,12 +93,12 @@ clean: CMakeFiles/Danny.dir/clean
 CMakeFiles/Danny.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Danny.dir\build.make CMakeFiles/Danny.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Danny.dir\build.make CMakeFiles/Danny.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Danny\cmake-build-debug\CMakeFiles" --progress-num=1,2,3,4,5 "Built target Danny"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Danny\cmake-build-debug\CMakeFiles" --progress-num=1,2,3 "Built target Danny"
 .PHONY : CMakeFiles/Danny.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/Danny.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Danny\cmake-build-debug\CMakeFiles" 5
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Danny\cmake-build-debug\CMakeFiles" 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/Danny.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\david\OneDrive\Documentos\Universidad\GTAS\Sistemas operativos\Practica\Overlook-System\Danny\cmake-build-debug\CMakeFiles" 0
 .PHONY : CMakeFiles/Danny.dir/rule

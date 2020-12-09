@@ -142,60 +142,6 @@ Danny/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Danny.dir\build.make CMakeFiles/Danny.dir/build
 .PHONY : Danny/fast
 
-5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.obj: 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.obj
-
-.PHONY : 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.obj
-
-# target to build an object file
-5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Danny.dir\build.make CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.obj
-.PHONY : 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.obj
-
-5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.i: 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.i
-
-.PHONY : 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.i
-
-# target to preprocess a source file
-5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Danny.dir\build.make CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.i
-.PHONY : 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.i
-
-5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.s: 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.s
-
-.PHONY : 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.s
-
-# target to generate assembly for a file
-5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Danny.dir\build.make CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.s
-.PHONY : 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.c.s
-
-5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.obj: 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.obj
-
-.PHONY : 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.obj
-
-# target to build an object file
-5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Danny.dir\build.make CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.obj
-.PHONY : 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.obj
-
-5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.i: 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.i
-
-.PHONY : 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.i
-
-# target to preprocess a source file
-5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Danny.dir\build.make CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.i
-.PHONY : 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.i
-
-5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.s: 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.s
-
-.PHONY : 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.s
-
-# target to generate assembly for a file
-5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Danny.dir\build.make CMakeFiles/Danny.dir/5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.s
-.PHONY : 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.c.s
-
 configuracion.obj: configuracion.c.obj
 
 .PHONY : configuracion.obj
@@ -259,12 +205,6 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... Danny
-	@echo ... 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.obj
-	@echo ... 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.i
-	@echo ... 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/configuracion.s
-	@echo ... 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.obj
-	@echo ... 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.i
-	@echo ... 5af4338f5c6aba915b835055c81c9edc/GTAS/Sistemas_operativos/Practica/Overlook-System/Jack/jack.s
 	@echo ... configuracion.obj
 	@echo ... configuracion.i
 	@echo ... configuracion.s

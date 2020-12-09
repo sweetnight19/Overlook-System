@@ -1,0 +1,3 @@
+"C:\Program Files\JetBrains\CLion 2020.2\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\Jack.dir/objects.a
+C:\MinGW\bin\ar.exe cr CMakeFiles\Jack.dir/objects.a @CMakeFiles\Jack.dir\objects1.rsp
+C:\MinGW\bin\gcc.exe -g   -Wl,--whole-archive CMakeFiles\Jack.dir/objects.a -Wl,--no-whole-archive  -o Jack.exe -Wl,--out-implib,libJack.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\Jack.dir\linklibs.rsp

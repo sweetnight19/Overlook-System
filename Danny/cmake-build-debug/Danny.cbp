@@ -92,18 +92,6 @@
 		<Unit filename="C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Danny/danny.c">
 			<Option target="Danny"/>
 		</Unit>
-		<Unit filename="C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/configuracion.c">
-			<Option target="Danny"/>
-		</Unit>
-		<Unit filename="C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/configuracion.h">
-			<Option target="Danny"/>
-		</Unit>
-		<Unit filename="C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/jack.c">
-			<Option target="Danny"/>
-		</Unit>
-		<Unit filename="C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/servidor.h">
-			<Option target="Danny"/>
-		</Unit>
 		<Unit filename="C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Danny/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>

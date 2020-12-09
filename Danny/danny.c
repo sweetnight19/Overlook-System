@@ -15,28 +15,12 @@ Configuracion *configuracion;
 Datos *datos;
 int sockfd;
 
-void signalHandler() {
+void signalHandler()
+{
     int i;
     char buffer[TRAMA], danny[6];
 
     write(STDOUT_FILENO, "\nDisconnecting Danny...\n", sizeof("\nDisconnecting Danny...\n"));
-    write(STDOUT_FILENO, "Disconnecting Jack...", sizeof("Disconnecting Jack..."));
-    strcpy(danny, "DANNY");
-    for (int j = 0; j < (int) strlen(danny - 1); j++) {
-        buffer[j] = danny[j];
-    }
-    for (int j = 1 + (int) strlen(danny); j < 14; j++) {
-        buffer[j] = '\0';
-    }
-    buffer[14] = 'Q';
-    i = 15;
-    for (int j = 0; i < TRAMA && j < (int) strlen(configuracion->nombre); i++, j++) {
-        buffer[i] = configuracion->nombre[j];
-    }
-    for (int j = i; j < TRAMA; j++) {
-        buffer[j] = '\0';
-    }
-    write(sockfd, buffer, TRAMA);
 
     free(configuracion->path);
     close(sockfd);
@@ -45,17 +29,20 @@ void signalHandler() {
     raise(SIGINT);
 }
 
-int main(int argc, char *argv[]) {
-    int conf;
+int main(int argc, char *argv[])
+{
+    int conf, conexion;
     char buffer[BUFFER];
 
     //Iniciamos las variables y la memoria dinamica
     signal(SIGINT, signalHandler);
-    configuracion = (Configuracion *) malloc(sizeof(Configuracion));
-    datos = (Datos *) malloc(sizeof(Datos));
+    configuracion = (Configuracion *)malloc(sizeof(Configuracion));
+    datos = (Datos *)malloc(sizeof(Datos));
+    conexion = 0;
 
     //Comprobamos el argumento que sea correcto
-    if (argc != 2) {
+    if (argc != 2)
+    {
         write(STDOUT_FILENO, "ERROR: No has indicado el archivo de configuración\n",
               sizeof("ERROR: No has indicado el archivo de configuración\n"));
         free(configuracion);
@@ -64,32 +51,47 @@ int main(int argc, char *argv[]) {
 
     conf = open(argv[1], O_RDONLY);
     //Comprobamos que exista el fichero de configuracion
-    if (conf < 0) {
+    if (conf < 0)
+    {
         write(STDOUT_FILENO, "ERROR: No es correcto el path del archivo de configuración\n",
               sizeof("ERROR: No es correcto el path del archivo de configuración\n"));
-    } else {
+    }
+    else
+    {
         write(STDOUT_FILENO, "\nStarting Danny...\n", sizeof(char) * strlen("\nStarting Danny...\n\n"));
-        //Leemos el fichero de configuracion
-        lecturaConfiguracion(&conf, configuracion);
-        close(conf);
+        while (conexion == 0)
+        {
 
-        //Conectamos con el servidor
-        write(STDOUT_FILENO, "Connecting Jack...\n\n", sizeof(char) * strlen("Connecting Jack...\n\n"));
-        configurarCliente((char *) configuracion->IPJack, configuracion->portJack, &sockfd, configuracion->nombre);
+            //Leemos el fichero de configuracion
+            lecturaConfiguracion(&conf, configuracion);
+            close(conf);
 
-        //Leemos el fichero .txt en el directorio indicado en el fichero de configuracion
-        comprobarFichero(configuracion, datos);
+            //Conectamos con el servidor
+            write(STDOUT_FILENO, "Connecting Jack...\n\n", sizeof(char) * strlen("Connecting Jack...\n\n"));
+            conexion = configurarCliente((char *)configuracion->IPJack, configuracion->portJack, &sockfd, configuracion->nombre);
 
-        //Enviamos la trama
-        enviarDatos(datos, &sockfd);
-        //write(STDOUT_FILENO, "Data sent\n", sizeof(char) * strlen("Data sent\n"));
+            if (conexion == 0)
+            {
 
-        sprintf(buffer, "$%s:\n", configuracion->nombre);
-        write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
-        while (1) {
+                while (1)
+                {
 
+                    //Leemos el fichero .txt en el directorio indicado en el fichero de configuracion
+                    comprobarFichero(configuracion, datos);
+
+                    //Enviamos la trama
+                    enviarDatos(datos, &sockfd);
+                    //write(STDOUT_FILENO, "Data sent\n", sizeof(char) * strlen("Data sent\n"));
+
+                    sprintf(buffer, "$%s:\n", configuracion->nombre);
+                    write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
+
+                    sleep(configuracion->tiempo);
+                }
+            }
         }
     }
+    close(sockfd);
     free(datos);
     free(configuracion->path);
     free(configuracion);

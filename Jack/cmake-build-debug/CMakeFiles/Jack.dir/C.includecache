@@ -1,0 +1,64 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/configuracion.c
+configuracion.h
+C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/configuracion.h
+
+C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/configuracion.h
+fcntl.h
+-
+unistd.h
+-
+stdio.h
+-
+string.h
+-
+stdlib.h
+-
+
+C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/jack.c
+fcntl.h
+-
+stdlib.h
+-
+stdio.h
+-
+configuracion.h
+C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/configuracion.h
+servidor.h
+C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/servidor.h
+
+C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/servidor.c
+servidor.h
+C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/servidor.h
+
+C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/servidor.h
+arpa/inet.h
+-
+netinet/in.h
+-
+sys/socket.h
+-
+stdint.h
+-
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+strings.h
+-
+unistd.h
+-
+signal.h
+-
+configuracion.h
+C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Jack/configuracion.h
+
