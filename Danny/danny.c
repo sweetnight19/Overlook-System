@@ -79,7 +79,6 @@ int main(int argc, char *argv[])
                     //Enviamos la trama
                     enviarDatos(datos, &sockfd);
                     //write(STDOUT_FILENO, "Data sent\n", sizeof(char) * strlen("Data sent\n"));
-
                     sprintf(buffer, "$%s:\n", configuracion->nombre);
                     write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
 

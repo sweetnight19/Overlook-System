@@ -16,6 +16,8 @@
 #include <strings.h>
 #include <unistd.h>
 #include <signal.h>
+#include <pthread.h>
+#include <signal.h>
 
 //Librerias propias
 #include "configuracion.h"
