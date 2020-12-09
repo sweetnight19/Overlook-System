@@ -17,9 +17,6 @@ int sockfd;
 
 void signalHandler()
 {
-    int i;
-    char buffer[TRAMA], danny[6];
-
     write(STDOUT_FILENO, "\nDisconnecting Danny...\n", sizeof("\nDisconnecting Danny...\n"));
 
     free(configuracion->path);
@@ -38,7 +35,7 @@ int main(int argc, char *argv[])
     signal(SIGINT, signalHandler);
     configuracion = (Configuracion *)malloc(sizeof(Configuracion));
     datos = (Datos *)malloc(sizeof(Datos));
-    conexion = 0;
+    conexion = EXIT_SUCCESS;
 
     //Comprobamos el argumento que sea correcto
     if (argc != 2)
@@ -53,13 +50,13 @@ int main(int argc, char *argv[])
     //Comprobamos que exista el fichero de configuracion
     if (conf < 0)
     {
-        write(STDOUT_FILENO, "ERROR: No es correcto el path del archivo de configuración\n",
-              sizeof("ERROR: No es correcto el path del archivo de configuración\n"));
+        write(STDOUT_FILENO, "ERROR: No es correcto el path del archivo de configuración\n", sizeof("ERROR: No es correcto el path del archivo de configuración\n"));
+        return EXIT_FAILURE;
     }
     else
     {
         write(STDOUT_FILENO, "\nStarting Danny...\n", sizeof(char) * strlen("\nStarting Danny...\n\n"));
-        while (conexion == 0)
+        while (conexion == EXIT_SUCCESS)
         {
 
             //Leemos el fichero de configuracion
@@ -70,7 +67,7 @@ int main(int argc, char *argv[])
             write(STDOUT_FILENO, "Connecting Jack...\n\n", sizeof(char) * strlen("Connecting Jack...\n\n"));
             conexion = configurarCliente((char *)configuracion->IPJack, configuracion->portJack, &sockfd, configuracion->nombre);
 
-            if (conexion == 0)
+            if (conexion == EXIT_SUCCESS)
             {
 
                 while (1)

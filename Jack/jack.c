@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
     {
         write(STDOUT_FILENO, "ERROR: No es correcto el path del archivo de configuración\n",
               sizeof("ERROR: No es correcto el path del archivo de configuración\n"));
+        return EXIT_FAILURE;
     }
     else
     {
@@ -44,5 +45,5 @@ int main(int argc, char *argv[])
         write(STDOUT_FILENO, "Waiting...\n", sizeof("Waiting...\n"));
         configurarServidor(configuracion->portJack);
     }
-    return 0;
+    return EXIT_SUCCESS;
 }

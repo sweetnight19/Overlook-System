@@ -13,7 +13,7 @@ int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre)
     *sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (*sockfd == -1)
     {
-        return 1;
+        return EXIT_FAILURE;
     }
     else
     {
@@ -27,7 +27,7 @@ int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre)
         // connect the client socket to server socket
         if (connect(*sockfd, (void *)&servaddr, sizeof(servaddr)) != 0)
         {
-            return 1;
+            return EXIT_FAILURE;
         }
         else
         {
@@ -58,7 +58,7 @@ int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre)
             }
             write(STDOUT_FILENO, "\n\n", sizeof("\n\n"));
         }
-        return 0;
+        return EXIT_SUCCESS;
     }
 }
 
