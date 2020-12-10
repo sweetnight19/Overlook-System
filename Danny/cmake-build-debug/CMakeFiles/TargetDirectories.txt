@@ -1,3 +1,0 @@
-C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Danny/cmake-build-debug/CMakeFiles/Danny.dir
-C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Danny/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/david/OneDrive/Documentos/Universidad/GTAS/Sistemas operativos/Practica/Overlook-System/Danny/cmake-build-debug/CMakeFiles/rebuild_cache.dir

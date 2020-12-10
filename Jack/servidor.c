@@ -4,7 +4,7 @@
 
 #include "servidor.h"
 
-int numClientes,newsock[NUM_CLIENTES];
+int numClientes, newsock[NUM_CLIENTES], cerrarThread;
 pthread_t threadClientes[NUM_CLIENTES];
 
 void *TareasServidor(void *socket_desc)
@@ -25,7 +25,7 @@ void *TareasServidor(void *socket_desc)
     //sprintf(buffer, "Nueva conexion desde %s:%hu\n", inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
     //write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
     read(newsock, buffer, TRAMA);
-    while (buffer[14] != 'Q')
+    while (buffer[14] != 'Q' && cerrarThread == EXIT_SUCCESS)
     {
         for (int i = 0; i < ORIGEN; ++i)
         {
@@ -128,28 +128,31 @@ void *TareasServidor(void *socket_desc)
             }
         }
         write(newsock, buffer2, TRAMA);
-        read(newsock, buffer, TRAMA);
+        if (cerrarThread == EXIT_SUCCESS)
+        {
+            //Al estar bloqueado en read, el ctrl+c no llega a cerrar el thread
+            read(newsock, buffer, TRAMA);
+        }
 
         enviat = 0;
     }
 
-    return EXIT_SUCCESS;
+    return NULL;
 }
 
 void signalHandler()
 {
     write(STDOUT_FILENO, "\nDisconnecting Jack...\n", sizeof("\nDisconnecting Jack...\n"));
-    printf("\nnumClientes: %d\n",numClientes);
+    cerrarThread = EXIT_FAILURE;
     for (int i = 0; i < numClientes; i++)
     {
-        pthread_join(threadClientes[i],NULL);
+        pthread_join(threadClientes[i], NULL);
     }
     for (int i = 0; i < numClientes; i++)
     {
         close(newsock[i]);
     }
     raise(SIGINT);
-    
 }
 
 void configurarServidor(int portJack)
@@ -161,6 +164,7 @@ void configurarServidor(int portJack)
     signal(SIGINT, signalHandler);
     port = portJack;
     numClientes = EXIT_SUCCESS;
+    cerrarThread = EXIT_SUCCESS;
 
     sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sockfd < 0)
@@ -193,7 +197,7 @@ void configurarServidor(int portJack)
             perror("accept");
             exit(EXIT_FAILURE);
         }
-        pthread_create(&threadClientes[numClientes], NULL, TareasServidor, (void *)& newsock[numClientes]);
+        pthread_create(&threadClientes[numClientes], NULL, TareasServidor, (void *)&newsock[numClientes]);
         numClientes++;
         /* 
         sprintf(buffer, "Nueva conexion desde %s:%hu\n", inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
