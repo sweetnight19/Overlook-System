@@ -4,15 +4,15 @@
 
 #include "servidor.h"
 
-int numClientes, newsock[NUM_CLIENTES], cerrarThread;
+int numClientes, newsock[NUM_CLIENTES], cerrarThread, sockfd;
 pthread_t threadClientes[NUM_CLIENTES];
 
 void *TareasServidor(void *socket_desc)
 {
     //Get the socket descriptor
-    int newsock = *(int *)socket_desc;
+    int *newsock = (int *)socket_desc;
     int enviat = 0;
-    int i;
+    int i, byte;
     char buffer[TRAMA], buffer2[TRAMA], jack[5], origen[ORIGEN], conexionOK[12], conexionKO[12], dadesOK[9], dadesKO[9], error[15];
 
     strcpy(jack, "JACK");
@@ -24,7 +24,7 @@ void *TareasServidor(void *socket_desc)
 
     //sprintf(buffer, "Nueva conexion desde %s:%hu\n", inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
     //write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
-    read(newsock, buffer, TRAMA);
+    read(*newsock, buffer, TRAMA);
     while (buffer[14] != 'Q' && cerrarThread == EXIT_SUCCESS)
     {
         for (int i = 0; i < ORIGEN; ++i)
@@ -127,14 +127,17 @@ void *TareasServidor(void *socket_desc)
                 buffer2[j] = '\0';
             }
         }
-        write(newsock, buffer2, TRAMA);
-        if (cerrarThread == EXIT_SUCCESS)
+        write(*newsock, buffer2, TRAMA);
+        byte = read(*newsock, buffer, TRAMA);
+
+        if (cerrarThread == EXIT_SUCCESS && byte > 0)
         {
+            enviat = 0;
             //Al estar bloqueado en read, el ctrl+c no llega a cerrar el thread
-            read(newsock, buffer, TRAMA);
+            //read(*newsock, buffer, TRAMA);
         }
 
-        enviat = 0;
+        //enviat = 0;
     }
 
     return NULL;
@@ -146,19 +149,22 @@ void signalHandler()
     cerrarThread = EXIT_FAILURE;
     for (int i = 0; i < numClientes; i++)
     {
-        pthread_join(threadClientes[i], NULL);
-    }
-    for (int i = 0; i < numClientes; i++)
-    {
         close(newsock[i]);
     }
+    printf("newsock cerrados\n");
+    close(sockfd);
+    printf("sockfd cerrado\n");
+    for (int i = 0; i < numClientes; i++)
+    {
+        pthread_join(threadClientes[i], NULL);
+    }
+    printf("threads cerrados\n");
     raise(SIGINT);
 }
 
 void configurarServidor(int portJack)
 {
     uint16_t port;
-    int sockfd;
     struct sockaddr_in s_addr;
 
     signal(SIGINT, signalHandler);
@@ -199,117 +205,5 @@ void configurarServidor(int portJack)
         }
         pthread_create(&threadClientes[numClientes], NULL, TareasServidor, (void *)&newsock[numClientes]);
         numClientes++;
-        /* 
-        sprintf(buffer, "Nueva conexion desde %s:%hu\n", inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
-        write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
-        read(newsock, buffer, TRAMA);
-        while (buffer[14] != 'Q')
-        {
-            for (int i = 0; i < ORIGEN; ++i)
-            {
-                origen[i] = buffer[i];
-            }
-            for (int i = 0; i < (int)strlen(jack); i++)
-            {
-                buffer2[i] = jack[i];
-            }
-            for (int i = 1 + (int)strlen(jack); i < 14; i++)
-            {
-                buffer2[i] = '\0';
-            }
-
-            //Responder a la trama de conexion
-            if (strcmp(origen, "DANNY") == 0 && buffer[14] == 'C')
-            {
-                write(STDOUT_FILENO, "Enviando trama de connexion\n", sizeof("Enviando trama de connexion\n"));
-                buffer2[14] = 'O';
-                i = 15;
-                for (int j = 0; i < TRAMA && j < (int)strlen(conexionOK); i++, j++)
-                {
-                    buffer2[i] = conexionOK[j];
-                }
-                for (int j = i; j < TRAMA; j++)
-                {
-                    buffer2[j] = '\0';
-                }
-                enviat = 1;
-            }
-            else
-            {
-                if (buffer[14] == 'C')
-                {
-                    write(STDOUT_FILENO, "Enviando trama de connexion erronea\n",
-                          sizeof("Enviando trama de connexion erronea\n"));
-                    buffer2[14] = 'E';
-                    i = 15;
-                    for (int j = 0; i < TRAMA && j < (int)strlen(conexionKO); i++, j++)
-                    {
-                        buffer2[i] = conexionKO[j];
-                    }
-                    for (int j = i; j < TRAMA; j++)
-                    {
-                        buffer2[j] = '\0';
-                    }
-                    enviat = 1;
-                }
-            }
-
-            //Responder a la trama de datos
-            if (strcmp(origen, "DANNY") == 0 && buffer[14] == 'D')
-            {
-                write(STDOUT_FILENO, "Enviando trama de datos\n", sizeof("Enviando trama de datos\n"));
-                buffer2[14] = 'B';
-                i = 15;
-                for (int j = 0; i < TRAMA && j < (int)strlen(dadesOK); i++, j++)
-                {
-                    buffer2[i] = dadesOK[j];
-                }
-                for (int j = i; j < TRAMA; j++)
-                {
-                    buffer2[j] = '\0';
-                }
-                enviat = 1;
-            }
-            else
-            {
-                if (buffer[14] == 'D')
-                {
-                    write(STDOUT_FILENO, "Enviando trama de datos erronea\n",
-                          sizeof("Enviando trama de datos erronea\n"));
-                    buffer2[14] = 'K';
-                    i = 15;
-                    for (int j = 0; i < TRAMA && j < (int)strlen(dadesKO); i++, j++)
-                    {
-                        buffer2[i] = dadesKO[j];
-                    }
-                    for (int j = i; j < TRAMA; j++)
-                    {
-                        buffer2[j] = '\0';
-                    }
-                    enviat = 1;
-                }
-            }
-
-            //Responder a la trama erronea
-            if (enviat == 0)
-            {
-                write(STDOUT_FILENO, "Enviando trama erronea\n", sizeof("Enviando trama erronea\n"));
-                buffer2[14] = 'Z';
-                i = 15;
-                for (int j = 0; i < TRAMA && j < (int)strlen(error); i++, j++)
-                {
-                    buffer2[i] = error[j];
-                }
-                for (int j = i; j < TRAMA; j++)
-                {
-                    buffer2[j] = '\0';
-                }
-            }
-            write(newsock, buffer2, TRAMA);
-            read(newsock, buffer, TRAMA);
-
-            enviat = 0;
         }
-        */
-    }
 }
