@@ -7,8 +7,8 @@
 #include <stdio.h>
 
 //Librerias propias
-#include "configuracion.h"
-#include "servidor.h"
+#include "Configuracion/configuracion.h"
+#include "Servidor/servidor.h"
 
 Configuracion *configuracion;
 

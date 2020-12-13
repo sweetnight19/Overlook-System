@@ -1,15 +1,15 @@
 all: danny
 
-danny.o: danny.c configuracion.h client.h
+danny.o: danny.c Configuracion/configuracion.h Cliente/client.h
 	@gcc -c danny.c -Wall -Wextra
 	@echo "Compilando danny.c"
 
-configuracion.o: configuracion.c configuracion.h
-	@gcc -c configuracion.c -Wall -Wextra
+configuracion.o: Configuracion/configuracion.c Configuracion/configuracion.h
+	@gcc -c Configuracion/configuracion.c -Wall -Wextra
 	@echo "Compilando configuracion.c"
 
-client.o: client.c client.h
-	@gcc -c client.c -Wall -Wextra
+client.o: Cliente/client.c Cliente/client.h
+	@gcc -c Cliente/client.c -Wall -Wextra
 	@echo "Compilando client.client"
 
 danny: danny.o configuracion.o client.o

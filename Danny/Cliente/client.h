@@ -1,31 +1,27 @@
 /**
  * @authors: David Marquet, Joan Casals
  */
-
-#ifndef DANNY_SERVIDOR_H
-#define DANNY_SERVIDOR_H
+#ifndef DANNY_CLIENT_H
+#define DANNY_CLIENT_H
 
 //Librerias del sistema
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 #include <unistd.h>
-#include <signal.h>
-#include <pthread.h>
-#include <signal.h>
-
-//Librerias propias
-#include "configuracion.h"
+#include "../Configuracion/configuracion.h"
 
 //Constantes
-#define ORIGEN 14
-#define NUM_CLIENTES 100
+#define TRAMA 115
 
-void configurarServidor(int portJack);
+int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre);
+
+void enviarDatos(Datos *datos, int *sockfd);
 
 #endif

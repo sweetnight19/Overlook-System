@@ -8,8 +8,8 @@
 #include <stdio.h>
 
 //Librerias propias
-#include "configuracion.h"
-#include "client.h"
+#include "Configuracion/configuracion.h"
+#include "Cliente/client.h"
 
 Configuracion *configuracion;
 Datos *datos;

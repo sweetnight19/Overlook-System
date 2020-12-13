@@ -1,15 +1,15 @@
 all: jack
 
-jack.o: jack.c configuracion.h servidor.h
+jack.o: jack.c Configuracion/configuracion.h Servidor/servidor.h
 	@gcc -c jack.c -Wall -Wextra -lpthread
 	@echo "Compilando jack.c"
 
-configuracion.o: configuracion.c configuracion.h
-	@gcc -c configuracion.c -Wall -Wextra
+configuracion.o: Configuracion/configuracion.c Configuracion/configuracion.h
+	@gcc -c Configuracion/configuracion.c -Wall -Wextra
 	@echo "Compilando configuracion.c"
 
-servidor.o: servidor.c servidor.h
-	@gcc -c servidor.c -Wall -Wextra -lpthread
+servidor.o: Servidor/servidor.c Servidor/servidor.h Semaforo/semaphore.h
+	@gcc -c Servidor/servidor.c -Wall -Wextra -lpthread
 	@echo "Compilando servidor.c"
 
 jack: jack.o configuracion.o servidor.o

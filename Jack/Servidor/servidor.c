@@ -205,5 +205,5 @@ void configurarServidor(int portJack)
         }
         pthread_create(&threadClientes[numClientes], NULL, TareasServidor, (void *)&newsock[numClientes]);
         numClientes++;
-        }
+    }
 }
