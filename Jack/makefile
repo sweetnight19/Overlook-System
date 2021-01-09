@@ -1,6 +1,6 @@
 all: jack
 
-jack.o: jack.c Configuracion/configuracion.h Servidor/servidor.h Lloyd/lloyd.h Semaforo/semaphore.h
+jack.o: jack.c Configuracion/configuracion.h Lloyd/lloyd.h Semaforo/semaphore.h
 	@gcc -c jack.c -Wall -Wextra -lpthread -std=gnu99
 	@echo "Compilando jack.c"
 
@@ -13,7 +13,7 @@ servidor.o: Servidor/servidor.c Servidor/servidor.h
 	@echo "Compilando servidor.c"
 
 semaphore.o: Semaforo/semaphore.c Semaforo/semaphore.h
-	@gcc -c  Semaforo/semaphore.c -Wall -Wextra -lpthread
+	@gcc -c Semaforo/semaphore.c -Wall -Wextra -lpthread
 	@echo "Compilando semaforo.c"
 
 lloyd.o: Lloyd/lloyd.c Lloyd/lloyd.h

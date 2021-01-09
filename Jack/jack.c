@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
             write(STDOUT_FILENO, "\nStarting Jack...\n\n", sizeof("\nStarting Jack...\n\n"));
             write(STDOUT_FILENO, "$Jack:\n", sizeof("$Jack:\n"));
             write(STDOUT_FILENO, "Waiting...\n", sizeof("Waiting...\n"));
-            configurarServidor(configuracion->portJack);
         }
 
         //INICIALITZEM ELS SEMAFORS I EL PROCES DE LLOYD
@@ -86,13 +85,28 @@ int main(int argc, char *argv[])
         switch(fork())
         {
             case -1: //HI HA HAGUT UN ERROR AL CREAR LLOYD
+                
                 write(STDOUT_FILENO, "\nERROR: No se ha podido crear el fork correctamente.\n", 
                     sizeof(char) * strlen("\nERROR: No se ha podido crear el fork correctamente.\n"));
                 break;
-            
-            default: //EL FORK PER LLOYD S'HA CREAT CORRECTAMENT I ES PASSA A PROCESSAR LES DADES
+
+            case 0: //ENTREM A LLOYD
+
                 processarDades(reg_estacions, &sem_write, &sem_read);
+
                 munmap(reg_estacions, sizeof(reg_estacions));
+
+                break;
+            
+            default:
+
+                configurarServidor(configuracion->portJack);
+
+                wait(NULL);
+            
+                munmap(reg_estacions, sizeof(reg_estacions));
+
+                free(configuracion->IPJack);
                 break;
         }
 

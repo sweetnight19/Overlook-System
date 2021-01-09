@@ -4,6 +4,7 @@
 
 #include "servidor.h"
 
+Reg_estacions *trama_estacio;
 
 int numClientes, newsock[NUM_CLIENTES], cerrarThread, sockfd;
 pthread_t threadClientes[NUM_CLIENTES];
@@ -14,7 +15,7 @@ void *TareasServidor(void *socket_desc)
     int *newsock = (int *)socket_desc;
     int enviat = 0;
     int i, byte;
-    char buffer[TRAMA], buffer2[TRAMA], jack[5], origen[ORIGEN], conexionOK[12], conexionKO[12], dadesOK[9], dadesKO[9], error[15];
+    char buffer[TRAMA], buffer2[TRAMA], jack[5], origen[ORIGEN], conexionOK[12], conexionKO[12], dadesOK[9], dadesKO[9], error[15], nom_estacio[TRAMA];
 
     strcpy(jack, "JACK");
     strcpy(conexionOK, "CONNEXIO OK");
@@ -44,6 +45,12 @@ void *TareasServidor(void *socket_desc)
         //Responder a la trama de conexion
         if (strcmp(origen, "DANNY") == 0 && buffer[14] == 'C')
         {
+            //Declarar cadena de tamany TRAMA per copiar desde la posicio 15 buffer[i] != '\0' i copiar les dades per passar a Lloyd
+            for (int j = 0, i = 15; buffer[i] != '\0'; j++, i++)
+            {
+                nom_estacio[j] = buffer[i];
+            }
+
             write(STDOUT_FILENO, "Enviando trama de connexion\n", sizeof("Enviando trama de connexion\n"));
             buffer2[14] = 'O';
             i = 15;
@@ -110,6 +117,93 @@ void *TareasServidor(void *socket_desc)
                     buffer2[j] = '\0';
                 }
                 enviat = 1;
+
+                //PROCESSAMENT DE LES DADES A ENVIAR A LLOYD
+
+                int contador = 0;
+                char *data, *hora, *temperatura, *humitat, *pressio_atmosferica, *precipitacio;
+                bool ok = true;
+
+                while (buffer[contador] != '#')
+                {
+                    data = buffer[contador];
+                    contador++;
+                }
+
+                if (strlen(data) > 10)
+                {
+                    ok = false;
+                }
+
+                contador++;
+
+                while (buffer[contador] != '#')
+                {
+                    hora = buffer[contador];
+                    contador++;
+                }
+
+                if (strlen(hora) > 8)
+                {
+                    ok = false;
+                }
+
+                contador++;
+
+                while (buffer[contador] != '#')
+                {
+                    temperatura = buffer[contador];
+                    contador++;
+                }
+
+                if (strlen(temperatura))
+                {
+                    ok = false;
+                }
+
+                contador++;
+
+                while (buffer[contador] != '#')
+                {
+                    humitat = buffer[contador];
+                    contador++;
+                }
+
+                if (strlen(humitat))
+                {
+                    ok = false;
+                }
+
+                contador++;
+
+                while (buffer[contador] != '#')
+                {
+                    pressio_atmosferica = buffer[contador];
+                    contador++;
+                }
+
+                if (strlen(pressio_atmosferica))
+                {
+                    ok = false;
+                }
+
+                contador++;
+
+                while (buffer[contador] != '#')
+                {
+                    precipitacio = buffer[contador];
+                    contador++;
+                }
+
+                if (strlen(precipitacio))
+                {
+                    ok = false;
+                }
+
+                if (ok == true)
+                {
+                    //ENVIAR LES DADES A LLOYD
+                }
             }
         }
 
@@ -173,38 +267,40 @@ void configurarServidor(int portJack)
     numClientes = EXIT_SUCCESS;
     cerrarThread = EXIT_SUCCESS;
 
-    sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP);
     if (sockfd < 0)
     {
         perror("socket TCP");
         exit(EXIT_FAILURE);
     }
-
-    bzero(&s_addr, sizeof(s_addr));
-    s_addr.sin_family = AF_INET;
-    s_addr.sin_port = htons(port);
-    s_addr.sin_addr.s_addr = INADDR_ANY;
-
-    if (bind(sockfd, (void *)&s_addr, sizeof(s_addr)) < 0)
+    else
     {
-        perror("bind");
-        exit(EXIT_FAILURE);
-    }
+        bzero(&s_addr, sizeof(s_addr));
+        s_addr.sin_family = AF_INET;
+        s_addr.sin_port = htons(port);
+        s_addr.sin_addr.s_addr = INADDR_ANY;
 
-    listen(sockfd, NUM_CLIENTES);
-
-    while (1)
-    {
-        struct sockaddr_in c_addr;
-        socklen_t c_len = sizeof(c_addr);
-
-        newsock[numClientes] = accept(sockfd, (void *)&c_addr, &c_len);
-        if (newsock[numClientes] < 0)
+        if (bind(sockfd, (void *)&s_addr, sizeof(s_addr)) < 0)
         {
-            perror("accept");
+            perror("bind");
             exit(EXIT_FAILURE);
         }
-        pthread_create(&threadClientes[numClientes], NULL, TareasServidor, (void *)&newsock[numClientes]);
-        numClientes++;
+
+        listen(sockfd, NUM_CLIENTES);
+
+        while (1)
+        {
+            struct sockaddr_in c_addr;
+            socklen_t c_len = sizeof(c_addr);
+
+            newsock[numClientes] = accept(sockfd, (void *)&c_addr, &c_len);
+            if (newsock[numClientes] < 0)
+            {
+                perror("accept");
+                exit(EXIT_FAILURE);
+            }
+            pthread_create(&threadClientes[numClientes], NULL, TareasServidor, (void *)&newsock[numClientes]);
+            numClientes++;
+        }
     }
 }

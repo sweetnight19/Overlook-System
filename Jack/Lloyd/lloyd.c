@@ -66,11 +66,11 @@ void *lloyd_thread(void *arg)
                             buffer_estructura_estacions.estacions[i].mitjana_estacions.pressio_atmos);
                     write(fd, buffer, sizeof(char) * strlen(buffer));
                 }
-
-                SEM_signal(&sem);
-                close(fd);
                 sleep(15);
             }
+            
+            SEM_signal(&sem);
+            close(fd);
         }
     }
 
@@ -95,7 +95,7 @@ void processarDades(Reg_estacions *reg_estacions, semaphore *sem_write, semaphor
 
     //signal(SIGINT, signalHandler);
 
-    SEM_constructor(&sem);
+    //SEM_constructor(&sem);
     SEM_init(&sem, 1);
 
     estructura_estacions.num_estacions = 0;

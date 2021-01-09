@@ -7,67 +7,45 @@
 #include <string.h>
 #include "semaphore.h"
 
-static int glob = 0;
-semaphore sem;
+int SEM_constructor_with_name(semaphore * sem, key_t key) {
 
-static void errExitEN (int s, const char *msg){
-	printf ("%s: %s\n", msg, strerror (s));
-	exit (EXIT_FAILURE);
+    // IPC_CREAT: if this is specified, and a semaphore with the given key does not exist, it is created, otherwise the call returns with -1, setting the appropriate errno value.
+    sem->shmid = semget(key, 1, IPC_CREAT | 0666);
+    if (sem->shmid < 0) return sem->shmid;
+    return 0;
 }
 
-static void * threadFunc (void *arg)
+int SEM_constructor (semaphore * sem)
 {
-	int loops = *((int *) arg);
-	int j;
-
-	for (j = 0; j < loops; j++){
-		SEM_wait(&sem);	
-		glob++;
-		SEM_signal(&sem);	
-	}
-	return NULL;
+	assert (sem != NULL);
+	sem->shmid = semget (IPC_PRIVATE, 1, IPC_CREAT | 0600);
+	if (sem->shmid < 0) return sem->shmid;
+    return 0;
 }
 
-int main (int argc, char *argv[]){
-	pthread_t t1, t2;
-	int loops, s;
+int SEM_init (const semaphore * sem, const int v)
+{
+	unsigned short _v[1] = {v};
+	assert (sem != NULL);
+	return semctl (sem->shmid, 0, SETALL, _v);
+}
 
-	SEM_constructor(&sem);
-	SEM_init(&sem,1);
+int SEM_destructor (const semaphore * sem)
+{
+	assert (sem != NULL);
+	return semctl (sem->shmid, 0, IPC_RMID, NULL);
+}
 
-	loops = (argc > 1) ? atoi (argv[1]) : 10000000;
+int SEM_wait (const semaphore * sem)
+{
+	struct sembuf o = {0, -1, SEM_UNDO};
+	assert (sem != NULL);
+	return semop(sem->shmid, &o, 1);
+}
 
-	s = pthread_create (&t1, NULL, threadFunc, &loops);
-	
-	if (s != 0)
-	{
-		errExitEN (s, "pthread_create");
-	}
-
-	s = pthread_create (&t2, NULL, threadFunc, &loops);
-	
-	if (s != 0)
-	{
-		errExitEN (s, "pthread_create");
-	}
-	
-	s = pthread_join (t1, NULL);
-
-	if (s != 0)
-	{
-		errExitEN (s, "pthread_join");
-	}	
-	
-	s = pthread_join (t2, NULL);
-	
-	if (s != 0)
-	{
-		errExitEN (s, "pthread_join");
-	}
-
-	printf ("glob = %d\n", glob);
-
-	SEM_destructor(&sem);
-
-	exit (EXIT_SUCCESS);
+int SEM_signal (const semaphore * sem)
+{
+	struct sembuf o = {0, 1, SEM_UNDO};
+	assert (sem != NULL);
+	return semop(sem->shmid, &o, 1);
 }
