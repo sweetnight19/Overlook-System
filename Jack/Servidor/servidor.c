@@ -4,6 +4,7 @@
 
 #include "servidor.h"
 
+
 int numClientes, newsock[NUM_CLIENTES], cerrarThread, sockfd;
 pthread_t threadClientes[NUM_CLIENTES];
 

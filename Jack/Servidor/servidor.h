@@ -21,6 +21,7 @@
 
 //Librerias propias
 #include "../Configuracion/configuracion.h"
+#include "../Semaforo/semaphore.h"
 
 //Constantes
 #define ORIGEN 14

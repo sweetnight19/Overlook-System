@@ -1,4 +1,4 @@
-/**
+/*
  * @authors: David Marquet, Joan Casals
  */
 
