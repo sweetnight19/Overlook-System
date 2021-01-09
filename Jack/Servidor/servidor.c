@@ -4,7 +4,6 @@
 
 #include "servidor.h"
 
-
 int numClientes, newsock[NUM_CLIENTES], cerrarThread, sockfd;
 pthread_t threadClientes[NUM_CLIENTES];
 
@@ -44,6 +43,7 @@ void *TareasServidor(void *socket_desc)
         //Responder a la trama de conexion
         if (strcmp(origen, "DANNY") == 0 && buffer[14] == 'C')
         {
+
             write(STDOUT_FILENO, "Enviando trama de connexion\n", sizeof("Enviando trama de connexion\n"));
             buffer2[14] = 'O';
             i = 15;
