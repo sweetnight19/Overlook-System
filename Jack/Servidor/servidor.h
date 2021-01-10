@@ -22,6 +22,7 @@
 //Librerias propias
 #include "../Configuracion/configuracion.h"
 #include "../Semaforo/semaphore.h"
+#include "../Lloyd/lloyd.h"
 
 //Constantes
 #define ORIGEN 14

@@ -4,8 +4,11 @@
 
 #include "servidor.h"
 
+<<<<<<< HEAD
 Reg_estacions *trama_estacio;
 
+=======
+>>>>>>> f7be03f801cc6c5977f86f8c26faeafaeda6df89
 int numClientes, newsock[NUM_CLIENTES], cerrarThread, sockfd;
 pthread_t threadClientes[NUM_CLIENTES];
 
@@ -45,11 +48,14 @@ void *TareasServidor(void *socket_desc)
         //Responder a la trama de conexion
         if (strcmp(origen, "DANNY") == 0 && buffer[14] == 'C')
         {
+<<<<<<< HEAD
             //Declarar cadena de tamany TRAMA per copiar desde la posicio 15 buffer[i] != '\0' i copiar les dades per passar a Lloyd
             for (int j = 0, i = 15; buffer[i] != '\0'; j++, i++)
             {
                 nom_estacio[j] = buffer[i];
             }
+=======
+>>>>>>> f7be03f801cc6c5977f86f8c26faeafaeda6df89
 
             write(STDOUT_FILENO, "Enviando trama de connexion\n", sizeof("Enviando trama de connexion\n"));
             buffer2[14] = 'O';

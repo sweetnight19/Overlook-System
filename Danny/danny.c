@@ -13,7 +13,7 @@
 
 Configuracion *configuracion;
 Datos *datos;
-int sockfd;
+int sockfd, sockfd2;
 
 void signalHandler()
 {
@@ -63,9 +63,10 @@ int main(int argc, char *argv[])
             lecturaConfiguracion(&conf, configuracion);
             close(conf);
 
-            //Conectamos con el servidor
+            //Conectamos con los servidores
             write(STDOUT_FILENO, "Connecting Jack...\n\n", sizeof(char) * strlen("Connecting Jack...\n\n"));
             conexion = configurarCliente((char *)configuracion->IPJack, configuracion->portJack, &sockfd, configuracion->nombre);
+            conexion = configurarCliente((char *)configuracion->IPWendy, configuracion->portWendy, &sockfd2, configuracion->nombre);
 
             if (conexion == EXIT_SUCCESS)
             {
