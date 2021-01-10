@@ -50,7 +50,10 @@ int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre)
             {
                 buffer[j] = '\0';
             }
+
+            //Enviamos trama de conexion
             write(*sockfd, buffer, TRAMA);
+
             read(*sockfd, buffer, TRAMA);
             for (int j = 15; buffer[j] != '\0'; j++)
             {

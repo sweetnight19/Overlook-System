@@ -22,9 +22,11 @@
 #define FECHA 10
 #define IP 16
 #define BUFFER 300
+#define MD5SUM 32
 
 //Tipos propios
-typedef struct {
+typedef struct
+{
     char nombre[NOMBRE];
     char *path;
     int tiempo;
@@ -34,13 +36,29 @@ typedef struct {
     int portWendy;
 } Configuracion;
 
-typedef struct {
+typedef struct
+{
+    char path[BUFFER];
+    char nomFoto[BUFFER];
+    int mida;
+    char md5sum[MD5SUM];
+} Fotografia;
+
+typedef struct
+{
+    Fotografia *fotos;
+    int numImagenes;
+} Imagen;
+
+typedef struct
+{
     char fecha[FECHA];
     char hora[HORA];
     char temperatura[TEMPERATURA];
     char humedad[HUMEDAD];
     char presionAtmosferica[PRESSION];
     char precipitacion[PRECIPITACION];
+    Imagen imagenes;
 } Datos;
 
 void lecturaConfiguracion(int *conf, Configuracion *configuracion);
@@ -73,6 +91,6 @@ void lecturaAtmosferica(int *txtfd, Datos *datos);
 
 void lecturaPrecipitacion(int *txtfd, Datos *datos);
 
-void comprobarFichero(Configuracion *configuracion,Datos *datos);
+void comprobarFichero(Configuracion *configuracion, Datos *datos);
 
 #endif

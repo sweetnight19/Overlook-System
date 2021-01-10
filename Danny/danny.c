@@ -28,14 +28,15 @@ void signalHandler()
 
 int main(int argc, char *argv[])
 {
-    int conf, conexion;
+    int conf, conexionJack, conexionWendy;
     char buffer[BUFFER];
 
     //Iniciamos las variables y la memoria dinamica
     signal(SIGINT, signalHandler);
     configuracion = (Configuracion *)malloc(sizeof(Configuracion));
     datos = (Datos *)malloc(sizeof(Datos));
-    conexion = EXIT_SUCCESS;
+    conexionJack = EXIT_SUCCESS;
+    conexionWendy = EXIT_SUCCESS;
 
     //Comprobamos el argumento que sea correcto
     if (argc != 2)
@@ -56,7 +57,7 @@ int main(int argc, char *argv[])
     else
     {
         write(STDOUT_FILENO, "\nStarting Danny...\n", sizeof(char) * strlen("\nStarting Danny...\n\n"));
-        while (conexion == EXIT_SUCCESS)
+        while (conexionJack == EXIT_SUCCESS && conexionWendy == EXIT_SUCCESS)
         {
 
             //Leemos el fichero de configuracion
@@ -65,10 +66,10 @@ int main(int argc, char *argv[])
 
             //Conectamos con los servidores
             write(STDOUT_FILENO, "Connecting Jack...\n\n", sizeof(char) * strlen("Connecting Jack...\n\n"));
-            conexion = configurarCliente((char *)configuracion->IPJack, configuracion->portJack, &sockfd, configuracion->nombre);
-            conexion = configurarCliente((char *)configuracion->IPWendy, configuracion->portWendy, &sockfd2, configuracion->nombre);
+            conexionJack = configurarCliente((char *)configuracion->IPJack, configuracion->portJack, &sockfd, configuracion->nombre);
+            conexionWendy = configurarCliente((char *)configuracion->IPWendy, configuracion->portWendy, &sockfd2, configuracion->nombre);
 
-            if (conexion == EXIT_SUCCESS)
+            if (conexionJack == EXIT_SUCCESS && conexionWendy == EXIT_SUCCESS)
             {
 
                 while (1)
@@ -79,6 +80,9 @@ int main(int argc, char *argv[])
 
                     //Enviamos la trama
                     enviarDatos(datos, &sockfd);
+
+                    //TODO send photos to wendy server
+
                     //write(STDOUT_FILENO, "Data sent\n", sizeof(char) * strlen("Data sent\n"));
                     sprintf(buffer, "$%s:\n", configuracion->nombre);
                     write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
@@ -89,6 +93,7 @@ int main(int argc, char *argv[])
         }
     }
     close(sockfd);
+    free(datos->imagenes.fotos);
     free(datos);
     free(configuracion->path);
     free(configuracion);
