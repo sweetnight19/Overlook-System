@@ -5,15 +5,148 @@
 #include "servidor.h"
 
 Reg_estacions *trama_estacio;
+semaphore* sem_write;
+semaphore* sem_read;
 
 int numClientes, newsock[NUM_CLIENTES], cerrarThread, sockfd;
 pthread_t threadClientes[NUM_CLIENTES];
+
+void processarLloyd(char buffer[TRAMA], int *int_error, char nom_estacio[TRAMA]) 
+{
+    int contador = 0;
+    char *data, *hora, *temperatura, *humitat, *pressio_atmosferica, *precipitacio;
+    bool ok = true;
+
+    while (buffer[contador] != '#')
+    {
+        data = &buffer[contador];
+        contador++;
+    }
+
+    if (strlen(data) > 10)
+    {
+        ok = false;
+    }
+
+    contador++;
+
+    while (buffer[contador] != '#')
+    {
+        hora = &buffer[contador];
+        contador++;
+    }
+
+    if (strlen(hora) > 8)
+    {
+        ok = false;
+    }
+
+    contador++;
+
+    while (buffer[contador] != '#')
+    {
+        temperatura = &buffer[contador];
+        contador++;
+    }
+
+    if (strlen(temperatura))
+    {
+        ok = false;
+    }
+
+    contador++;
+
+    while (buffer[contador] != '#')
+    {
+        humitat = &buffer[contador];
+        contador++;
+    }
+
+    if (strlen(humitat))
+    {
+        ok = false;
+    }
+
+    contador++;
+
+    while (buffer[contador] != '#')
+    {
+        pressio_atmosferica = &buffer[contador];
+        contador++;
+    }
+
+    if (strlen(pressio_atmosferica))
+    {
+        ok = false;
+    }
+
+    contador++;
+
+    while (buffer[contador] != '#')
+    {
+        precipitacio = &buffer[contador];
+        contador++;
+    }
+
+    if (strlen(precipitacio) > 4)
+    {
+        ok = false;
+    }
+
+    if (ok == true)
+    {
+        int_error = 0;
+
+        char pantalla[TRAMA];
+        //ENVIAR LES DADES A LLOYD
+
+        write(STDOUT_FILENO, "\n$Jack:", sizeof(char) * sizeof("\n$Jack:"));
+        write(STDOUT_FILENO, "\nReceiving data...", sizeof(char) * sizeof("\nReceiving data..."));
+        write(STDOUT_FILENO, nom_estacio, sizeof(&nom_estacio));
+        write(STDOUT_FILENO, "\n", sizeof(char));
+
+        sprintf(pantalla, "%s\n%s\n%s\n%s\n%s\n%s\n", data, hora, temperatura, humitat, pressio_atmosferica, precipitacio);
+        write(STDOUT_FILENO, pantalla, sizeof (char) * strlen(pantalla));
+
+        SEM_wait(sem_write);
+
+        strcpy(trama_estacio->nom_estacio, nom_estacio);
+        trama_estacio->humitat = atof(humitat);
+        trama_estacio->temperatura = atof(temperatura);
+        trama_estacio->precipitacio = atof(precipitacio);
+        trama_estacio->pressio_atmos = atof(pressio_atmosferica);
+
+        SEM_signal(sem_read);
+    }else{
+        //ENVIAR QUE HI HA HAGUT UN ERROR
+        *int_error = 1;
+    }
+}
+
+void signalHandler()
+{
+    write(STDOUT_FILENO, "\nDisconnecting Jack...\n", sizeof("\nDisconnecting Jack...\n"));
+    cerrarThread = EXIT_FAILURE;
+    for (int i = 0; i < numClientes; i++)
+    {
+        close(newsock[i]);
+    }
+    printf("newsock cerrados\n");
+    close(sockfd);
+    printf("sockfd cerrado\n");
+    for (int i = 0; i < numClientes; i++)
+    {
+        pthread_join(threadClientes[i], NULL);
+    }
+    printf("threads cerrados\n");
+    raise(SIGINT);
+}
 
 void *TareasServidor(void *socket_desc)
 {
     //Get the socket descriptor
     int *newsock = (int *)socket_desc;
-    int enviat = 0;
+    int enviat = 0, int_error = 0;
     int i, byte;
     char buffer[TRAMA], buffer2[TRAMA], jack[5], origen[ORIGEN], conexionOK[12], conexionKO[12], dadesOK[9], dadesKO[9], error[15], nom_estacio[TRAMA];
 
@@ -99,10 +232,14 @@ void *TareasServidor(void *socket_desc)
                 buffer2[j] = '\0';
             }
             enviat = 1;
+
+             //PROCESSAMENT DE LES DADES A ENVIAR A LLOYD
+
+            processarLloyd(buffer, &int_error, nom_estacio);
         }
         else
         {
-            if (buffer[14] == 'D')
+            if (buffer[14] == 'D' && int_error == 1)
             {
                 write(STDOUT_FILENO, "Enviando trama de datos erronea\n",
                       sizeof("Enviando trama de datos erronea\n"));
@@ -117,93 +254,6 @@ void *TareasServidor(void *socket_desc)
                     buffer2[j] = '\0';
                 }
                 enviat = 1;
-
-                //PROCESSAMENT DE LES DADES A ENVIAR A LLOYD
-
-                int contador = 0;
-                char *data, *hora, *temperatura, *humitat, *pressio_atmosferica, *precipitacio;
-                bool ok = true;
-
-                while (buffer[contador] != '#')
-                {
-                    data = buffer[contador];
-                    contador++;
-                }
-
-                if (strlen(data) > 10)
-                {
-                    ok = false;
-                }
-
-                contador++;
-
-                while (buffer[contador] != '#')
-                {
-                    hora = buffer[contador];
-                    contador++;
-                }
-
-                if (strlen(hora) > 8)
-                {
-                    ok = false;
-                }
-
-                contador++;
-
-                while (buffer[contador] != '#')
-                {
-                    temperatura = buffer[contador];
-                    contador++;
-                }
-
-                if (strlen(temperatura))
-                {
-                    ok = false;
-                }
-
-                contador++;
-
-                while (buffer[contador] != '#')
-                {
-                    humitat = buffer[contador];
-                    contador++;
-                }
-
-                if (strlen(humitat))
-                {
-                    ok = false;
-                }
-
-                contador++;
-
-                while (buffer[contador] != '#')
-                {
-                    pressio_atmosferica = buffer[contador];
-                    contador++;
-                }
-
-                if (strlen(pressio_atmosferica))
-                {
-                    ok = false;
-                }
-
-                contador++;
-
-                while (buffer[contador] != '#')
-                {
-                    precipitacio = buffer[contador];
-                    contador++;
-                }
-
-                if (strlen(precipitacio))
-                {
-                    ok = false;
-                }
-
-                if (ok == true)
-                {
-                    //ENVIAR LES DADES A LLOYD
-                }
             }
         }
 
@@ -230,31 +280,13 @@ void *TareasServidor(void *socket_desc)
             enviat = 0;
             //Al estar bloqueado en read, el ctrl+c no llega a cerrar el thread
             //read(*newsock, buffer, TRAMA);
+            signal(SIGINT, signalHandler);
         }
 
         //enviat = 0;
     }
 
     return NULL;
-}
-
-void signalHandler()
-{
-    write(STDOUT_FILENO, "\nDisconnecting Jack...\n", sizeof("\nDisconnecting Jack...\n"));
-    cerrarThread = EXIT_FAILURE;
-    for (int i = 0; i < numClientes; i++)
-    {
-        close(newsock[i]);
-    }
-    printf("newsock cerrados\n");
-    close(sockfd);
-    printf("sockfd cerrado\n");
-    for (int i = 0; i < numClientes; i++)
-    {
-        pthread_join(threadClientes[i], NULL);
-    }
-    printf("threads cerrados\n");
-    raise(SIGINT);
 }
 
 void configurarServidor(int portJack)

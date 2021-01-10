@@ -105,8 +105,6 @@ int main(int argc, char *argv[])
                 wait(NULL);
             
                 munmap(reg_estacions, sizeof(reg_estacions));
-
-                free(configuracion->IPJack);
                 break;
         }
 

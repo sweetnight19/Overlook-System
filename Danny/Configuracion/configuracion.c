@@ -381,7 +381,7 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
                     {
                         datos->imagenes.fotos = realloc(datos->imagenes.fotos, sizeof(Fotografia) * (datos->imagenes.numImagenes + 1));
                         strcpy(datos->imagenes.fotos[datos->imagenes.numImagenes].nomFoto, direntp->d_name);
-                        sprintf(datos->imagenes.fotos[datos->imagenes.numImagenes].path, "%s%c%s", path, "/", direntp->d_name);
+                        sprintf(datos->imagenes.fotos[datos->imagenes.numImagenes].path, "%s%c%s", path, '/', direntp->d_name);
                         datos->imagenes.numImagenes++;
 
                         //TODO check size of the photo
