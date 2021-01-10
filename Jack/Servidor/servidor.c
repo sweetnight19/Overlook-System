@@ -127,18 +127,6 @@ void signalHandler()
 {
     write(STDOUT_FILENO, "\nDisconnecting Jack...\n", sizeof("\nDisconnecting Jack...\n"));
     cerrarThread = EXIT_FAILURE;
-    for (int i = 0; i < numClientes; i++)
-    {
-        close(newsock[i]);
-    }
-    printf("newsock cerrados\n");
-    close(sockfd);
-    printf("sockfd cerrado\n");
-    for (int i = 0; i < numClientes; i++)
-    {
-        pthread_join(threadClientes[i], NULL);
-    }
-    printf("threads cerrados\n");
     raise(SIGINT);
 }
 
@@ -326,7 +314,7 @@ void configurarServidor(int portJack)
             socklen_t c_len = sizeof(c_addr);
 
             newsock[numClientes] = accept(sockfd, (void *)&c_addr, &c_len);
-            if (newsock[numClientes] < 0)
+            if (newsock[numClientes] != -1)
             {
                 perror("accept");
                 exit(EXIT_FAILURE);
@@ -334,5 +322,25 @@ void configurarServidor(int portJack)
             pthread_create(&threadClientes[numClientes], NULL, TareasServidor, (void *)&newsock[numClientes]);
             numClientes++;
         }
+
+        for (int i = 0; i < numClientes; i++)
+        {
+            pthread_cancel(threadClientes[i]);
+        }
+
+        for (int i = 0; i < numClientes; i++)
+        {
+            pthread_join(threadClientes[i], NULL);
+        }
+
+        for (int i = 0; i < numClientes; i++)
+        {
+            close(newsock[i]);
+        }
+        printf("newsock cerrados\n");
+        close(sockfd);
+        printf("sockfd cerrado\n");
+        
+        printf("threads cerrados\n");
     }
 }

@@ -40,15 +40,6 @@ int main(int argc, char *argv[])
                 sizeof("ERROR: No es correcto el path del archivo de configuración\n"));
             return EXIT_FAILURE;
         }
-        else
-        {
-            //Leemos el fichero de configuracion
-            lecturaConfiguracion(&conf, configuracion);
-
-            write(STDOUT_FILENO, "\nStarting Jack...\n\n", sizeof("\nStarting Jack...\n\n"));
-            write(STDOUT_FILENO, "$Jack:\n", sizeof("$Jack:\n"));
-            write(STDOUT_FILENO, "Waiting...\n", sizeof("Waiting...\n"));
-        }
 
         //INICIALITZEM ELS SEMAFORS I EL PROCES DE LLOYD
 
@@ -58,8 +49,8 @@ int main(int argc, char *argv[])
         key_t key_read, key_write;
         int sem;
 
-        key_read = ftok("read.txt", 'I');
-        key_write = ftok("write.txt", 'D');
+        key_read = ftok("read.txt", 'A');
+        key_write = ftok("write.txt", 'B');
 
         sem = SEM_constructor_with_name(&sem_write, key_write);
         if (sem < 0)
@@ -99,10 +90,14 @@ int main(int argc, char *argv[])
                 break;
             
             default:
+                //Leemos el fichero de configuracion
+                lecturaConfiguracion(&conf, configuracion);
+
+                write(STDOUT_FILENO, "\nStarting Jack...\n\n", sizeof("\nStarting Jack...\n\n"));
+                write(STDOUT_FILENO, "$Jack:\n", sizeof("$Jack:\n"));
+                write(STDOUT_FILENO, "Waiting...\n", sizeof("Waiting...\n"));
 
                 configurarServidor(configuracion->portJack);
-
-                wait(NULL);
             
                 munmap(reg_estacions, sizeof(reg_estacions));
                 break;
