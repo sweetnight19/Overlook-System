@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 {
 
     int conf;
+    pid_t pid;
 
     configuracion = (Configuracion *)malloc(sizeof(Configuracion));
 
@@ -30,20 +31,22 @@ int main(int argc, char *argv[])
               sizeof("ERROR: No has indicado el archivo de configuración\n"));
         free(configuracion);
         return EXIT_FAILURE;
-    }else{
+    }
+    else
+    {
 
         //Comprobamos que exista el fichero de configuracion
         conf = open(argv[1], O_RDONLY);
         if (conf < 0)
         {
             write(STDOUT_FILENO, "ERROR: No es correcto el path del archivo de configuración\n",
-                sizeof("ERROR: No es correcto el path del archivo de configuración\n"));
+                  sizeof("ERROR: No es correcto el path del archivo de configuración\n"));
             return EXIT_FAILURE;
         }
 
         //INICIALITZEM ELS SEMAFORS I EL PROCES DE LLOYD
 
-        Reg_estacions* reg_estacions;
+        Reg_estacions *reg_estacions;
 
         semaphore sem_read, sem_write;
         key_t key_read, key_write;
@@ -55,15 +58,15 @@ int main(int argc, char *argv[])
         sem = SEM_constructor_with_name(&sem_write, key_write);
         if (sem < 0)
         {
-            write(STDOUT_FILENO, "\nERROR: No se ha podido crear el semaforo correctamente.\n", 
-                sizeof(char) * strlen("\nERROR: No se ha podido crear el semaforo correctamente.\n"));
+            write(STDOUT_FILENO, "\nERROR: No se ha podido crear el semaforo correctamente.\n",
+                  sizeof(char) * strlen("\nERROR: No se ha podido crear el semaforo correctamente.\n"));
         }
 
         sem = SEM_constructor_with_name(&sem_read, key_read);
         if (sem < 0)
         {
-            write(STDOUT_FILENO, "\nERROR: No se ha podido crear el semaforo correctamente.\n", 
-                sizeof(char) * strlen("\nERROR: No se ha podido crear el semaforo correctamente.\n"));
+            write(STDOUT_FILENO, "\nERROR: No se ha podido crear el semaforo correctamente.\n",
+                  sizeof(char) * strlen("\nERROR: No se ha podido crear el semaforo correctamente.\n"));
         }
 
         SEM_init(&sem_write, 1);
@@ -73,34 +76,30 @@ int main(int argc, char *argv[])
 
         reg_estacions = mmap(NULL, sizeof(Reg_estacions), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
-        switch(fork())
+        pid = fork();
+        if (pid == -1) //HI HA HAGUT UN ERROR AL CREAR LLOYD
         {
-            case -1: //HI HA HAGUT UN ERROR AL CREAR LLOYD
-                
-                write(STDOUT_FILENO, "\nERROR: No se ha podido crear el fork correctamente.\n", 
-                    sizeof(char) * strlen("\nERROR: No se ha podido crear el fork correctamente.\n"));
-                break;
+            write(STDOUT_FILENO, "\nERROR: No se ha podido crear el fork correctamente.\n",
+                  sizeof(char) * strlen("\nERROR: No se ha podido crear el fork correctamente.\n"));
+        }
+        else if (pid == 0) //ENTREM A LLOYD
+        {
+            processarDades(reg_estacions, &sem_write, &sem_read);
 
-            case 0: //ENTREM A LLOYD
+            munmap(reg_estacions, sizeof(reg_estacions));
+        }
+        else
+        {
+            //Leemos el fichero de configuracion
+            lecturaConfiguracion(&conf, configuracion);
 
-                processarDades(reg_estacions, &sem_write, &sem_read);
+            write(STDOUT_FILENO, "\nStarting Jack...\n\n", sizeof("\nStarting Jack...\n\n"));
+            write(STDOUT_FILENO, "$Jack:\n", sizeof("$Jack:\n"));
+            write(STDOUT_FILENO, "Waiting...\n", sizeof("Waiting...\n"));
 
-                munmap(reg_estacions, sizeof(reg_estacions));
+            configurarServidor(configuracion->portJack);
 
-                break;
-            
-            default:
-                //Leemos el fichero de configuracion
-                lecturaConfiguracion(&conf, configuracion);
-
-                write(STDOUT_FILENO, "\nStarting Jack...\n\n", sizeof("\nStarting Jack...\n\n"));
-                write(STDOUT_FILENO, "$Jack:\n", sizeof("$Jack:\n"));
-                write(STDOUT_FILENO, "Waiting...\n", sizeof("Waiting...\n"));
-
-                configurarServidor(configuracion->portJack);
-            
-                munmap(reg_estacions, sizeof(reg_estacions));
-                break;
+            munmap(reg_estacions, sizeof(reg_estacions));
         }
 
         SEM_destructor(&sem_read);

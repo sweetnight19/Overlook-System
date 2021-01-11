@@ -289,60 +289,58 @@ void configurarServidor(int portJack)
     numClientes = EXIT_SUCCESS;
     cerrarThread = EXIT_SUCCESS;
 
-    sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP);
+    sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sockfd < 0)
     {
         perror("socket TCP");
         exit(EXIT_FAILURE);
     }
-    else
-    {
-        bzero(&s_addr, sizeof(s_addr));
-        s_addr.sin_family = AF_INET;
-        s_addr.sin_port = htons(port);
-        s_addr.sin_addr.s_addr = INADDR_ANY;
 
-        if (bind(sockfd, (void *)&s_addr, sizeof(s_addr)) < 0)
+    bzero(&s_addr, sizeof(s_addr));
+    s_addr.sin_family = AF_INET;
+    s_addr.sin_port = htons(port);
+    s_addr.sin_addr.s_addr = INADDR_ANY;
+
+    if (bind(sockfd, (void *)&s_addr, sizeof(s_addr)) < 0)
+    {
+        perror("bind");
+        exit(EXIT_FAILURE);
+    }
+
+    listen(sockfd, NUM_CLIENTES);
+
+    while (cerrarThread == EXIT_SUCCESS)
+    {
+        struct sockaddr_in c_addr;
+        socklen_t c_len = sizeof(c_addr);
+
+        newsock[numClientes] = accept(sockfd, (void *)&c_addr, &c_len);
+        if (newsock[numClientes] < 0)
         {
-            perror("bind");
+            perror("accept");
             exit(EXIT_FAILURE);
         }
-
-        listen(sockfd, NUM_CLIENTES);
-
-        while (1)
-        {
-            struct sockaddr_in c_addr;
-            socklen_t c_len = sizeof(c_addr);
-
-            newsock[numClientes] = accept(sockfd, (void *)&c_addr, &c_len);
-            if (newsock[numClientes] != -1)
-            {
-                perror("accept");
-                exit(EXIT_FAILURE);
-            }
-            pthread_create(&threadClientes[numClientes], NULL, TareasServidor, (void *)&newsock[numClientes]);
-            numClientes++;
-        }
-
-        for (int i = 0; i < numClientes; i++)
-        {
-            pthread_cancel(threadClientes[i]);
-        }
-
-        for (int i = 0; i < numClientes; i++)
-        {
-            pthread_join(threadClientes[i], NULL);
-        }
-
-        for (int i = 0; i < numClientes; i++)
-        {
-            close(newsock[i]);
-        }
-        printf("newsock cerrados\n");
-        close(sockfd);
-        printf("sockfd cerrado\n");
-
-        printf("threads cerrados\n");
+        pthread_create(&threadClientes[numClientes], NULL, TareasServidor, (void *)&newsock[numClientes]);
+        numClientes++;
     }
+
+    for (int i = 0; i < numClientes; i++)
+    {
+        pthread_cancel(threadClientes[i]);
+    }
+
+    for (int i = 0; i < numClientes; i++)
+    {
+        pthread_join(threadClientes[i], NULL);
+    }
+
+    for (int i = 0; i < numClientes; i++)
+    {
+        close(newsock[i]);
+    }
+    printf("newsock cerrados\n");
+    close(sockfd);
+    printf("sockfd cerrado\n");
+
+    printf("threads cerrados\n");
 }
