@@ -5,13 +5,13 @@
 #include "servidor.h"
 
 Reg_estacions *trama_estacio;
-semaphore* sem_write;
-semaphore* sem_read;
+semaphore *sem_write;
+semaphore *sem_read;
 
 int numClientes, newsock[NUM_CLIENTES], cerrarThread, sockfd;
 pthread_t threadClientes[NUM_CLIENTES];
 
-void processarLloyd(char buffer[TRAMA], int *int_error, char nom_estacio[TRAMA]) 
+void processarLloyd(char buffer[TRAMA], int *int_error, char nom_estacio[TRAMA])
 {
     int contador = 0;
     char *data, *hora, *temperatura, *humitat, *pressio_atmosferica, *precipitacio;
@@ -106,7 +106,7 @@ void processarLloyd(char buffer[TRAMA], int *int_error, char nom_estacio[TRAMA])
         write(STDOUT_FILENO, "\n", sizeof(char));
 
         sprintf(pantalla, "%s\n%s\n%s\n%s\n%s\n%s\n", data, hora, temperatura, humitat, pressio_atmosferica, precipitacio);
-        write(STDOUT_FILENO, pantalla, sizeof (char) * strlen(pantalla));
+        write(STDOUT_FILENO, pantalla, sizeof(char) * strlen(pantalla));
 
         SEM_wait(sem_write);
 
@@ -117,7 +117,9 @@ void processarLloyd(char buffer[TRAMA], int *int_error, char nom_estacio[TRAMA])
         trama_estacio->pressio_atmos = atof(pressio_atmosferica);
 
         SEM_signal(sem_read);
-    }else{
+    }
+    else
+    {
         //ENVIAR QUE HI HA HAGUT UN ERROR
         *int_error = 1;
     }
@@ -221,7 +223,7 @@ void *TareasServidor(void *socket_desc)
             }
             enviat = 1;
 
-             //PROCESSAMENT DE LES DADES A ENVIAR A LLOYD
+            //PROCESSAMENT DE LES DADES A ENVIAR A LLOYD
 
             processarLloyd(buffer, &int_error, nom_estacio);
         }
@@ -340,7 +342,7 @@ void configurarServidor(int portJack)
         printf("newsock cerrados\n");
         close(sockfd);
         printf("sockfd cerrado\n");
-        
+
         printf("threads cerrados\n");
     }
 }

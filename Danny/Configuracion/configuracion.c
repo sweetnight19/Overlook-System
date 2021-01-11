@@ -113,6 +113,7 @@ void lecturaIPWendy(int *conf, Configuracion *configuracion)
     int i;
     char letra;
 
+    read(*conf, &letra, sizeof(char));
     i = 0;
     read(*conf, &letra, sizeof(char));
     configuracion->IPWendy[i] = letra;
@@ -281,6 +282,38 @@ void lecturaPrecipitacion(int *txtfd, Datos *datos)
     write(STDOUT_FILENO, "\n", sizeof(char) * strlen("\n"));
 }
 
+char *calcularTamanoImagen(Fotografia imagen)
+{
+    char *tamano, *args[] = {"stat", "-c", "%s", imagen.path, NULL};
+
+    //averiguar mida
+    execvp(args[0], args);
+    for (int i = 0, count = 0; count > 0; i++)
+    {
+        tamano = realloc(tamano, sizeof(char) * (i + 1));
+        count = read(STDOUT_FILENO, &tamano[i], sizeof(char));
+    }
+    //printf("TAMANO previ: %s\n", tamano);
+    return tamano;
+}
+
+char *calcularMd5sum(Fotografia imagen)
+{
+    char *md5sum, *args[] = {"md5sum", imagen.path, NULL};
+
+    md5sum = (char *)malloc(sizeof(char) * (MD5SUM + 1));
+    //averiguar md5
+    execvp(args[0], args);
+    for (int i = 0; i < MD5SUM; i++)
+    {
+        //md5sum = realloc(md5sum, sizeof(char) * (i + 1));
+        read(STDOUT_FILENO, &md5sum[i], sizeof(char));
+    }
+    //md5sum[MD5SUM + 1] = '\0';
+    //printf("MD5SUM previ: %s\n", md5sum);
+    return md5sum;
+}
+
 void comprobarFichero(Configuracion *configuracion, Datos *datos)
 {
     int numArchivos, txtfd, hayTXT;
@@ -379,16 +412,21 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
                         direntp->d_name[strlen(direntp->d_name) - 3] == 'j' &&
                         direntp->d_name[strlen(direntp->d_name) - 4] == '.')
                     {
+                        sprintf(buffer, "%s\n", direntp->d_name);
+                        write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
+
+                        //Hacemos realloc para la nueva foto
+                        datos->imagenes.numImagenes = 0;
                         datos->imagenes.fotos = realloc(datos->imagenes.fotos, sizeof(Fotografia) * (datos->imagenes.numImagenes + 1));
                         strcpy(datos->imagenes.fotos[datos->imagenes.numImagenes].nomFoto, direntp->d_name);
                         sprintf(datos->imagenes.fotos[datos->imagenes.numImagenes].path, "%s%c%s", path, '/', direntp->d_name);
+
+                        //Miramos el peso de la imagen
+                        datos->imagenes.fotos[datos->imagenes.numImagenes].mida = calcularTamanoImagen(datos->imagenes.fotos[datos->imagenes.numImagenes]);
+
+                        //Miramos el md5sum de la imagen
+                        strcpy(datos->imagenes.fotos[datos->imagenes.numImagenes].md5sum, calcularMd5sum(datos->imagenes.fotos[datos->imagenes.numImagenes]));
                         datos->imagenes.numImagenes++;
-
-                        //TODO check size of the photo
-                        //TODO check md5sum of the photo
-
-                        sprintf(buffer, "%s\n", direntp->d_name);
-                        write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
                     }
                 }
                 //Comprobamos si hay el fichero .txt deseado
@@ -417,7 +455,7 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
         close(txtfd);
 
         //Eliminamos el fichero .txt despues de la lectura
-        remove(archivoTXT);
+        //remove(archivoTXT);
         write(STDOUT_FILENO, "\n", sizeof("\n"));
     }
 }

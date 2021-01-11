@@ -40,7 +40,7 @@ typedef struct
 {
     char path[BUFFER];
     char nomFoto[BUFFER];
-    int mida;
+    char *mida;
     char md5sum[MD5SUM];
 } Fotografia;
 
@@ -92,5 +92,9 @@ void lecturaAtmosferica(int *txtfd, Datos *datos);
 void lecturaPrecipitacion(int *txtfd, Datos *datos);
 
 void comprobarFichero(Configuracion *configuracion, Datos *datos);
+
+char *calcularTamanoImagen(Fotografia imagen);
+
+char* calcularMd5sum(Fotografia imagen);
 
 #endif

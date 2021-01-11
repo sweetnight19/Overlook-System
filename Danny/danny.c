@@ -11,31 +11,29 @@
 #include "Configuracion/configuracion.h"
 #include "Cliente/client.h"
 
-Configuracion *configuracion;
-Datos *datos;
-int sockfd, sockfd2;
+int closeDanny, sockfd, sockfd2;
 
 void signalHandler()
 {
     write(STDOUT_FILENO, "\nDisconnecting Danny...\n", sizeof("\nDisconnecting Danny...\n"));
-
-    free(configuracion->path);
+    closeDanny = EXIT_FAILURE;
     close(sockfd);
-    free(configuracion);
-    free(datos);
-    raise(SIGINT);
+    close(sockfd2);
 }
 
 int main(int argc, char *argv[])
 {
-    int conf, conexionJack, conexionWendy;
+    int conf, /*conexionJack,*/ conexionWendy;
     char buffer[BUFFER];
+    Configuracion *configuracion;
+    Datos *datos;
 
     //Iniciamos las variables y la memoria dinamica
+    closeDanny = EXIT_SUCCESS;
     signal(SIGINT, signalHandler);
     configuracion = (Configuracion *)malloc(sizeof(Configuracion));
     datos = (Datos *)malloc(sizeof(Datos));
-    conexionJack = EXIT_SUCCESS;
+    //conexionJack = EXIT_SUCCESS;
     conexionWendy = EXIT_SUCCESS;
 
     //Comprobamos el argumento que sea correcto
@@ -57,7 +55,7 @@ int main(int argc, char *argv[])
     else
     {
         write(STDOUT_FILENO, "\nStarting Danny...\n", sizeof(char) * strlen("\nStarting Danny...\n\n"));
-        while (conexionJack == EXIT_SUCCESS && conexionWendy == EXIT_SUCCESS)
+        while (/*conexionJack == EXIT_SUCCESS &&*/ conexionWendy == EXIT_SUCCESS && closeDanny == EXIT_SUCCESS)
         {
 
             //Leemos el fichero de configuracion
@@ -66,33 +64,42 @@ int main(int argc, char *argv[])
 
             //Conectamos con los servidores
             write(STDOUT_FILENO, "Connecting Jack...\n\n", sizeof(char) * strlen("Connecting Jack...\n\n"));
-            conexionJack = configurarCliente((char *)configuracion->IPJack, configuracion->portJack, &sockfd, configuracion->nombre);
+            //conexionJack = configurarCliente((char *)configuracion->IPJack, configuracion->portJack, &sockfd, configuracion->nombre);
+            write(STDOUT_FILENO, "Connecting Wendy...\n\n", sizeof(char) * strlen("Connecting Wendy...\n\n"));
             conexionWendy = configurarCliente((char *)configuracion->IPWendy, configuracion->portWendy, &sockfd2, configuracion->nombre);
-
-            if (conexionJack == EXIT_SUCCESS && conexionWendy == EXIT_SUCCESS)
+            if (/*conexionJack == EXIT_SUCCESS &&*/ conexionWendy == EXIT_SUCCESS)
             {
 
-                while (1)
+                while (closeDanny == EXIT_SUCCESS)
                 {
 
                     //Leemos el fichero .txt en el directorio indicado en el fichero de configuracion
-                    comprobarFichero(configuracion, datos);
+                    //comprobarFichero(configuracion, datos);
 
-                    //Enviamos la trama
-                    enviarDatos(datos, &sockfd);
+                    //Enviamos los datos al Jack
+                    //enviarDatos(datos, &sockfd);
 
                     //TODO send photos to wendy server
+                    //enviarDatosWendy(datos, &sockfd2);
 
                     //write(STDOUT_FILENO, "Data sent\n", sizeof(char) * strlen("Data sent\n"));
-                    sprintf(buffer, "$%s:\n", configuracion->nombre);
-                    write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
+                    for (int i = 0; i < BUFFER; i++)
+                    {
+                        buffer[i] = '\0';
+                    }
 
+                    sprintf(buffer, "$%s :\n", configuracion->nombre);
+                    write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
+                    write(STDOUT_FILENO, "\n", sizeof("\n"));
                     sleep(configuracion->tiempo);
                 }
             }
+            else
+            {
+                write(STDOUT_FILENO, "\nJack and Wendy are not avaliable\n", sizeof("\nJack and Wendy are not avaliable\n"));
+            }
         }
     }
-    close(sockfd);
     free(datos->imagenes.fotos);
     free(datos);
     free(configuracion->path);

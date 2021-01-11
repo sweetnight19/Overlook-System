@@ -7,7 +7,10 @@ int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre)
 {
     int i;
     struct sockaddr_in servaddr;
-    char danny[6] = "DANNY", buffer[TRAMA];
+    char danny[6], buffer[TRAMA];
+
+    strcpy(danny, "DANNY");
+    danny[strlen(danny)] = '\0';
 
     // socket create and varification
     *sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -31,11 +34,11 @@ int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre)
         }
         else
         {
-            for (int j = 0; j < (int)strlen(danny - 1); j++)
+            for (int j = 0; j < (int)strlen("DANNY"); j++)
             {
                 buffer[j] = danny[j];
             }
-            for (int j = 1 + (int)strlen(buffer); j < 14; j++)
+            for (int j = (int)strlen(buffer); j < 14; j++)
             {
                 buffer[j] = '\0';
             }
@@ -53,7 +56,6 @@ int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre)
 
             //Enviamos trama de conexion
             write(*sockfd, buffer, TRAMA);
-
             read(*sockfd, buffer, TRAMA);
             for (int j = 15; buffer[j] != '\0'; j++)
             {
@@ -65,6 +67,36 @@ int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre)
     }
 }
 
+void enviarDatosWendy(Datos *datos, int *sockfd)
+{
+    char buffer[TRAMA], origen[6];
+
+    strcpy(origen, "DANNY");
+    for (int i = 0; i < (int)strlen(origen); i++)
+    {
+        buffer[i] = origen[i];
+    }
+    for (int i = strlen(buffer); i < 14; i++)
+    {
+        buffer[i] = '\0';
+    }
+    buffer[14] = 'I';
+    printf("nomFoto: %s\n", datos->imagenes.fotos[0].nomFoto);
+    strcat(buffer, datos->imagenes.fotos[0].nomFoto);
+    strcat(buffer, "#");
+    printf("mida: %s\n", datos->imagenes.fotos[0].mida);
+    strcat(buffer, datos->imagenes.fotos[0].mida);
+    strcat(buffer, "#");
+    printf("md5sum: %s\n", datos->imagenes.fotos[0].md5sum);
+    strcat(buffer, datos->imagenes.fotos[0].md5sum);
+    for (int i = strlen(buffer); i < TRAMA; i++)
+    {
+        origen[i] = '\0';
+    }
+    printf("trama previa de enviar la foto: %s\n", buffer);
+    //write(STDOUT_FILENO, buffer, sizeof(char) * TRAMA);
+    write(*sockfd, buffer, sizeof(char) * TRAMA);
+}
 void enviarDatos(Datos *datos, int *sockfd)
 {
     int j;

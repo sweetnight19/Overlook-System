@@ -10,7 +10,7 @@ configuracion.o: Configuracion/configuracion.c Configuracion/configuracion.h
 
 client.o: Cliente/client.c Cliente/client.h
 	@gcc -c Cliente/client.c -Wall -Wextra
-	@echo "Compilando client.client"
+	@echo "Compilando client.c"
 
 danny: danny.o configuracion.o client.o
 	@gcc danny.o configuracion.o client.o -Wall -Wextra -o danny.exe

@@ -16,7 +16,7 @@ void *TareasServidor(void *socket_desc)
     char buffer[TRAMA], buffer2[TRAMA], wendy[6],
         origen[ORIGEN], conexionOK[12], conexionKO[12],
         dadesOK[9], dadesKO[9], error[15],
-        nomFitxer[NAMEFILE], mida[MD5SUM], /*checksum[MD5SUM],*/ nomEstacio[TRAMA];
+        nomFitxer[NAMEFILE], mida[MD5SUM], /*checksum[MD5SUM],*/ nomEstacio[NOMBRE];
 
     strcpy(wendy, "WENDY");
     strcpy(conexionOK, "CONNEXIO OK");
@@ -25,19 +25,22 @@ void *TareasServidor(void *socket_desc)
     strcpy(dadesKO, "DADES KO");
     strcpy(error, "ERROR DE TRAMA");
 
-    //sprintf(buffer, "Nueva conexion desde %s:%hu\n", inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
-    //write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
     read(*newsock, buffer, TRAMA);
     while (buffer[14] != 'Q' && cerrarThread == EXIT_SUCCESS)
     {
-        for (int i = 0; i < ORIGEN; ++i)
+        //Copiamos el "DANNY"
+        for (int i = 0; (i < ORIGEN) && (buffer[i - 1] != 'Y'); ++i)
         {
             origen[i] = buffer[i];
         }
+
+        //Ponemos "Wendy" para la habitacion
         for (int i = 0; i < (int)strlen(wendy); i++)
         {
             buffer2[i] = wendy[i];
         }
+
+        //Llenamos del '\0' la respuesta hasta el tipo
         for (int i = 1 + (int)strlen(wendy); i < 14; i++)
         {
             buffer2[i] = '\0';
@@ -47,14 +50,14 @@ void *TareasServidor(void *socket_desc)
         if (strcmp(origen, "DANNY") == 0 && buffer[14] == 'C')
         {
 
-            for (j = 0, i = 15; buffer[i] != '\0'; i++)
+            for (j = 0, i = 15; buffer[i] != '\0'; i++, j++)
             {
                 nomEstacio[j] = buffer[i];
             }
-            nomEstacio[j] = '\0';
-            //sprintf(buffer2, "Nueva connexion: %s", nomEstacio);
+            nomEstacio[strlen(nomEstacio)] = '\0';
             write(STDOUT_FILENO, "Nueva connexion: ", sizeof("Nueva connexion: "));
             write(STDOUT_FILENO, nomEstacio, sizeof(char) * strlen(nomEstacio));
+            write(STDOUT_FILENO, "\n", sizeof("\n"));
             for (int count = 0; count < atoi(mida); i++)
             {
                 count += read(*newsock, buffer, TRAMA);
@@ -185,7 +188,7 @@ void *TareasServidor(void *socket_desc)
 
 void signalHandler()
 {
-    write(STDOUT_FILENO, "\nDisconnecting Jack...\n", sizeof("\nDisconnecting Jack...\n"));
+    write(STDOUT_FILENO, "\nDisconnecting Wendy...\n", sizeof("\nDisconnecting Wendy...\n"));
     cerrarThread = EXIT_FAILURE;
     raise(SIGINT);
 }
