@@ -151,3 +151,31 @@ void enviarDatos(Datos *datos, int *sockfd)
     }
     write(STDOUT_FILENO, "\n\n", sizeof("\n\n"));
 }
+
+void enviarTramaDesconec(int *sockfd, char *nombre)
+{
+    int j;
+    char danny[6], buffer[TRAMA];
+
+    strcpy(danny, "DANNY");
+    for (int i = 0; i < (int)strlen(danny); i++)
+    {
+        buffer[i] = danny[i];
+    }
+    for (int i = (int)strlen(danny); i < 14; i++)
+    {
+        buffer[i] = '\0';
+    }
+    buffer[14] = 'Q';
+    j = 15;
+    for (int i = 0; i < (int)strlen(nombre); i++, j++)
+    {
+        buffer[j] = nombre[i];
+    }
+    for (int i = (int)strlen(nombre) + 14; i < TRAMA; i++)
+    {
+        buffer[i] = '\0';
+    }
+    write(STDOUT_FILENO, "\nComunicando desconnexion...\n", sizeof("\nnComunicando desconnexion...\n"));
+    write(*sockfd, buffer, TRAMA);
+}

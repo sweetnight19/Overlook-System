@@ -26,4 +26,6 @@ void enviarDatos(Datos *datos, int *sockfd);
 
 void enviarDatosWendy(Datos *datos, int *sockfd);
 
+void enviarTramaDesconec(int *sockfd2,char *nombre);
+
 #endif

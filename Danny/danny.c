@@ -17,8 +17,6 @@ void signalHandler()
 {
     write(STDOUT_FILENO, "\nDisconnecting Danny...\n", sizeof("\nDisconnecting Danny...\n"));
     closeDanny = EXIT_FAILURE;
-    close(sockfd);
-    close(sockfd2);
 }
 
 int main(int argc, char *argv[])
@@ -72,7 +70,6 @@ int main(int argc, char *argv[])
 
                 while (closeDanny == EXIT_SUCCESS)
                 {
-
                     //Leemos el fichero .txt en el directorio indicado en el fichero de configuracion
                     //comprobarFichero(configuracion, datos);
 
@@ -93,6 +90,14 @@ int main(int argc, char *argv[])
                     write(STDOUT_FILENO, "\n", sizeof("\n"));
                     sleep(configuracion->tiempo);
                 }
+                //Desconnexion de Jack
+                enviarTramaDesconec(&sockfd,configuracion->nombre);
+
+                //Desconnexion de Wendy
+                enviarTramaDesconec(&sockfd2,configuracion->nombre);
+
+                close(sockfd);
+                close(sockfd2);
             }
             else
             {

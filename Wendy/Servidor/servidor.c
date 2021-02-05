@@ -12,7 +12,7 @@ void *TareasServidor(void *socket_desc)
     int *newsock = (int *)socket_desc;
 
     int enviat = 0;
-    int i, j, byte;
+    int i, j;
     char buffer[TRAMA], buffer2[TRAMA], wendy[6],
         origen[ORIGEN], conexionOK[12], conexionKO[12],
         dadesOK[9], dadesKO[9], error[15],
@@ -63,7 +63,9 @@ void *TareasServidor(void *socket_desc)
                 count += read(*newsock, buffer, TRAMA);
             }
 
-            write(STDOUT_FILENO, "Enviando trama de connexion\n", sizeof("Enviando trama de connexion\n"));
+            write(STDOUT_FILENO, "Enviando trama de connexion a ", sizeof("Enviando trama de connexion a "));
+            write(STDOUT_FILENO, nomEstacio, sizeof(strlen(nomEstacio)));
+            write(STDOUT_FILENO, "\n", sizeof("\n"));
             buffer2[14] = 'O';
             i = 15;
             for (int j = 0; i < TRAMA && j < (int)strlen(conexionOK); i++, j++)
@@ -80,8 +82,10 @@ void *TareasServidor(void *socket_desc)
         {
             if (buffer[14] == 'C')
             {
-                write(STDOUT_FILENO, "Enviando trama de connexion erronea\n",
-                      sizeof("Enviando trama de connexion erronea\n"));
+                write(STDOUT_FILENO, "Enviando trama de connexion erronea a ",
+                      sizeof("Enviando trama de connexion erronea a "));
+                write(STDOUT_FILENO, nomEstacio, sizeof(strlen(nomEstacio)));
+                write(STDOUT_FILENO, "\n", sizeof("\n"));
                 buffer2[14] = 'E';
                 i = 15;
                 for (int j = 0; i < TRAMA && j < (int)strlen(conexionKO); i++, j++)
@@ -139,8 +143,10 @@ void *TareasServidor(void *socket_desc)
         {
             if (buffer[14] == 'D')
             {
-                write(STDOUT_FILENO, "Enviando trama de datos erronea\n",
-                      sizeof("Enviando trama de datos erronea\n"));
+                write(STDOUT_FILENO, "Enviando trama de datos erronea a ",
+                      sizeof("Enviando trama de datos erronea a "));
+                write(STDOUT_FILENO, nomEstacio, sizeof(strlen(nomEstacio)));
+                write(STDOUT_FILENO, "\n", sizeof("\n"));
                 buffer2[14] = 'K';
                 i = 15;
                 for (int j = 0; i < TRAMA && j < (int)strlen(dadesKO); i++, j++)
@@ -158,7 +164,9 @@ void *TareasServidor(void *socket_desc)
         //Responder a la trama erronea
         if (enviat == 0)
         {
-            write(STDOUT_FILENO, "Enviando trama erronea\n", sizeof("Enviando trama erronea\n"));
+            write(STDOUT_FILENO, "Enviando trama erronea a ", sizeof("Enviando trama erronea a "));
+            write(STDOUT_FILENO, nomEstacio, sizeof(strlen(nomEstacio)));
+            write(STDOUT_FILENO, "\n", sizeof("\n"));
             buffer2[14] = 'Z';
             i = 15;
             for (int j = 0; i < TRAMA && j < (int)strlen(error); i++, j++)
@@ -170,19 +178,20 @@ void *TareasServidor(void *socket_desc)
                 buffer2[j] = '\0';
             }
         }
-        write(*newsock, buffer2, TRAMA);
-        byte = read(*newsock, buffer, TRAMA);
-
-        if (cerrarThread == EXIT_SUCCESS && byte > 0)
+        if (enviat > -1)
         {
-            enviat = 0;
-            //Al estar bloqueado en read, el ctrl+c no llega a cerrar el thread
-            //read(*newsock, buffer, TRAMA);
+            write(*newsock, buffer2, TRAMA);
+            read(*newsock, buffer, TRAMA);
         }
-
-        //enviat = 0;
+        //Trama de desconnexion
+        if (buffer[14] == 'Q')
+        {
+            write(STDOUT_FILENO, "Recibiendo trama de desconexion de ",
+                  sizeof("Recibiendo trama de desconexion de "));
+            write(STDOUT_FILENO, nomEstacio, sizeof(strlen(nomEstacio)));
+            write(STDOUT_FILENO, "\n", sizeof("\n"));
+        }
     }
-
     return NULL;
 }
 
@@ -205,7 +214,7 @@ void configurarServidor(int portJack)
     numClientes = EXIT_SUCCESS;
     cerrarThread = EXIT_SUCCESS;
 
-    sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP);
     if (sockfd < 0)
     {
         perror("socket TCP");
@@ -224,20 +233,22 @@ void configurarServidor(int portJack)
     }
 
     listen(sockfd, NUM_CLIENTES);
+    struct sockaddr_in c_addr;
+    socklen_t c_len = sizeof(c_addr);
 
     while (cerrarThread == EXIT_SUCCESS)
     {
-        struct sockaddr_in c_addr;
-        socklen_t c_len = sizeof(c_addr);
 
         newsock[numClientes] = accept(sockfd, (void *)&c_addr, &c_len);
-        if (newsock[numClientes] < 0)
+        if (newsock[numClientes] > 0)
         {
-            perror("accept");
-            exit(EXIT_FAILURE);
+            pthread_create(&threadClientes[numClientes], NULL, TareasServidor, (void *)&newsock[numClientes]);
+            numClientes++;
+            //perror("accept");
+            //exit(EXIT_FAILURE);
         }
-        pthread_create(&threadClientes[numClientes], NULL, TareasServidor, (void *)&newsock[numClientes]);
-        numClientes++;
+        //pthread_create(&threadClientes[numClientes], NULL, TareasServidor, (void *)&newsock[numClientes]);
+        //numClientes++;
     }
 
     for (int i = 0; i < numClientes; i++)
