@@ -176,6 +176,5 @@ void enviarTramaDesconec(int *sockfd, char *nombre)
     {
         buffer[i] = '\0';
     }
-    write(STDOUT_FILENO, "\nComunicando desconnexion...\n", sizeof("\nnComunicando desconnexion...\n"));
     write(*sockfd, buffer, TRAMA);
 }

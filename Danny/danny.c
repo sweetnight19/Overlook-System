@@ -16,13 +16,13 @@ int closeDanny, sockfd, sockfd2;
 void signalHandler()
 {
     write(STDOUT_FILENO, "\nDisconnecting Danny...\n", sizeof("\nDisconnecting Danny...\n"));
+    write(STDOUT_FILENO, "\nComunicando desconnexion...\n", sizeof("\nnComunicando desconnexion...\n"));
     closeDanny = EXIT_FAILURE;
 }
 
 int main(int argc, char *argv[])
 {
     int conf, /*conexionJack,*/ conexionWendy;
-    char buffer[BUFFER];
     Configuracion *configuracion;
     Datos *datos;
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        write(STDOUT_FILENO, "\nStarting Danny...\n", sizeof(char) * strlen("\nStarting Danny...\n\n"));
+        write(STDOUT_FILENO, "\nStarting Danny...\n\n", sizeof(char) * strlen("\nStarting Danny...\n\n"));
         while (/*conexionJack == EXIT_SUCCESS &&*/ conexionWendy == EXIT_SUCCESS && closeDanny == EXIT_SUCCESS)
         {
 
@@ -70,31 +70,28 @@ int main(int argc, char *argv[])
 
                 while (closeDanny == EXIT_SUCCESS)
                 {
-                    //Leemos el fichero .txt en el directorio indicado en el fichero de configuracion
+                    //Leemos el fichero de datos y la imagen en el directorio indicado en el fichero de configuracion
                     //comprobarFichero(configuracion, datos);
 
                     //Enviamos los datos al Jack
                     //enviarDatos(datos, &sockfd);
+                    //write(STDOUT_FILENO, "Enviando datos al servidor Jack\n", sizeof(strlen("Enviando datos al servidor Jack\n")));
 
-                    //TODO send photos to wendy server
+                    //Enviamos la imagen a Wendy
                     //enviarDatosWendy(datos, &sockfd2);
+                    //write(STDOUT_FILENO, "Enviando imagen al servidor Wendy\n", sizeof(strlen("Enviando imagen al servidor Wendy\n")));
 
-                    //write(STDOUT_FILENO, "Data sent\n", sizeof(char) * strlen("Data sent\n"));
-                    for (int i = 0; i < BUFFER; i++)
-                    {
-                        buffer[i] = '\0';
-                    }
-
-                    sprintf(buffer, "$%s :\n", configuracion->nombre);
-                    write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
-                    write(STDOUT_FILENO, "\n", sizeof("\n"));
+                    //Prompt
+                    write(STDOUT_FILENO, "$", sizeof("$"));
+                    write(STDOUT_FILENO, configuracion->nombre, sizeof(strlen(configuracion->nombre)));
+                    write(STDOUT_FILENO, ":\n", sizeof(":\n"));
                     sleep(configuracion->tiempo);
                 }
                 //Desconnexion de Jack
-                enviarTramaDesconec(&sockfd,configuracion->nombre);
+                enviarTramaDesconec(&sockfd, configuracion->nombre);
 
                 //Desconnexion de Wendy
-                enviarTramaDesconec(&sockfd2,configuracion->nombre);
+                enviarTramaDesconec(&sockfd2, configuracion->nombre);
 
                 close(sockfd);
                 close(sockfd2);
