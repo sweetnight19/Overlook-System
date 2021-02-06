@@ -319,18 +319,29 @@ char *calcularTamanoImagen(Fotografia imagen)
 
 char *calcularMd5sum(Fotografia imagen)
 {
-    char *md5sum, *args[] = {"md5sum", imagen.path, NULL};
+    char *md5sum;
+    int fdpipe[2], pid;
+
+    pipe(fdpipe);
+    pid = fork();
 
     md5sum = (char *)malloc(sizeof(char) * (MD5SUM + 1));
-    //averiguar md5
-    execvp(args[0], args);
-    for (int i = 0; i < MD5SUM; i++)
+    if (pid == 0)
     {
-        //md5sum = realloc(md5sum, sizeof(char) * (i + 1));
-        read(STDOUT_FILENO, &md5sum[i], sizeof(char));
+        char *args[] = {"md5sum", imagen.path, NULL};
+        dup2(fdpipe[1], STDOUT_FILENO);
+        close(fdpipe[0]);
+        close(fdpipe[1]);
+        execvp(args[0], args);
     }
-    //md5sum[MD5SUM + 1] = '\0';
-    //printf("MD5SUM previ: %s\n", md5sum);
+    else
+    {
+        wait(NULL);
+        close(fdpipe[1]);
+        read(fdpipe[0], md5sum, sizeof(char) * MD5SUM);
+        md5sum[MD5SUM + 1] = '\0';
+        close(fdpipe[0]);
+    }
     return md5sum;
 }
 
@@ -445,7 +456,7 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
                         datos->imagenes.fotos[datos->imagenes.numImagenes].mida = calcularTamanoImagen(datos->imagenes.fotos[datos->imagenes.numImagenes]);
 
                         //Miramos el md5sum de la imagen
-                        //strcpy(datos->imagenes.fotos[datos->imagenes.numImagenes].md5sum, calcularMd5sum(datos->imagenes.fotos[datos->imagenes.numImagenes]));
+                        strcpy(datos->imagenes.fotos[datos->imagenes.numImagenes].md5sum, calcularMd5sum(datos->imagenes.fotos[datos->imagenes.numImagenes]));
 
                         datos->imagenes.numImagenes++;
                     }
