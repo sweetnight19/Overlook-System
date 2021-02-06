@@ -34,7 +34,7 @@ void *TareasServidor(void *socket_desc)
             origen[i] = buffer[i];
         }
 
-        //Ponemos "Wendy" para la habitacion
+        //Ponemos "WENDY" para la salida
         for (int i = 0; i < (int)strlen(wendy); i++)
         {
             buffer2[i] = wendy[i];
@@ -247,8 +247,6 @@ void configurarServidor(int portJack)
             //perror("accept");
             //exit(EXIT_FAILURE);
         }
-        //pthread_create(&threadClientes[numClientes], NULL, TareasServidor, (void *)&newsock[numClientes]);
-        //numClientes++;
     }
 
     for (int i = 0; i < numClientes; i++)

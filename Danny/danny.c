@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 
             //Conectamos con los servidores
             write(STDOUT_FILENO, "Connecting Jack...\n\n", sizeof(char) * strlen("Connecting Jack...\n\n"));
-            //conexionJack = configurarCliente((char *)configuracion->IPJack, configuracion->portJack, &sockfd, configuracion->nombre);
+            conexionJack = configurarCliente((char *)configuracion->IPJack, configuracion->portJack, &sockfd, configuracion->nombre);
             write(STDOUT_FILENO, "Connecting Wendy...\n\n", sizeof(char) * strlen("Connecting Wendy...\n\n"));
             conexionWendy = configurarCliente((char *)configuracion->IPWendy, configuracion->portWendy, &sockfd2, configuracion->nombre);
             if (/*conexionJack == EXIT_SUCCESS &&*/ conexionWendy == EXIT_SUCCESS)
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
                     //comprobarFichero(configuracion, datos);
 
                     //Enviamos los datos al Jack
-                    //enviarDatos(datos, &sockfd);
+                    //enviarDatosJack(datos, &sockfd);
                     //write(STDOUT_FILENO, "Enviando datos al servidor Jack\n", sizeof(strlen("Enviando datos al servidor Jack\n")));
 
                     //Enviamos la imagen a Wendy

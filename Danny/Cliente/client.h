@@ -22,7 +22,7 @@
 
 int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre);
 
-void enviarDatos(Datos *datos, int *sockfd);
+void enviarDatosJack(Datos *datos, int *sockfd);
 
 void enviarDatosWendy(Datos *datos, int *sockfd);
 

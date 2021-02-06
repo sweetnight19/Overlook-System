@@ -97,7 +97,8 @@ void enviarDatosWendy(Datos *datos, int *sockfd)
     //write(STDOUT_FILENO, buffer, sizeof(char) * TRAMA);
     write(*sockfd, buffer, sizeof(char) * TRAMA);
 }
-void enviarDatos(Datos *datos, int *sockfd)
+
+void enviarDatosJack(Datos *datos, int *sockfd)
 {
     int j;
     char danny[6], buffer[TRAMA];
