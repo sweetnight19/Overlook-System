@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <sys/wait.h>
 
 //Constantes
 #define NOMBRE 100
@@ -95,6 +96,6 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos);
 
 char *calcularTamanoImagen(Fotografia imagen);
 
-char* calcularMd5sum(Fotografia imagen);
+char *calcularMd5sum(Fotografia imagen);
 
 #endif

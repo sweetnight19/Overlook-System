@@ -284,17 +284,37 @@ void lecturaPrecipitacion(int *txtfd, Datos *datos)
 
 char *calcularTamanoImagen(Fotografia imagen)
 {
-    char *tamano, *args[] = {"stat", "-c", "%s", imagen.path, NULL};
+    char *mida, c;
+    int fdpipe[2], pid, byte;
 
-    //averiguar mida
-    execvp(args[0], args);
-    for (int i = 0, count = 0; count > 0; i++)
+    pipe(fdpipe);
+    pid = fork();
+    if (pid == 0)
     {
-        tamano = realloc(tamano, sizeof(char) * (i + 1));
-        count = read(STDOUT_FILENO, &tamano[i], sizeof(char));
+        char *args[] = {"stat", "-c", "%s", imagen.path, NULL};
+        dup2(fdpipe[1], STDOUT_FILENO);
+        close(fdpipe[0]);
+        close(fdpipe[1]);
+        execvp(args[0], args);
     }
-    //printf("TAMANO previ: %s\n", tamano);
-    return tamano;
+    else
+    {
+        wait(NULL);
+        close(fdpipe[1]);
+        read(fdpipe[0], &c, sizeof(char));
+        mida = (char *)malloc(sizeof(char));
+        mida[0] = c;
+        byte = read(fdpipe[0], &c, sizeof(char));
+        for (int i = 0; byte > 0 && c >= '0' && c <= '9'; i++)
+        {
+            mida = (char *)realloc(mida, sizeof(char) * (i + 1));
+            mida[i + 1] = c;
+            byte = read(fdpipe[0], &c, sizeof(char));
+        }
+        close(fdpipe[0]);
+        mida[strlen(mida)] = '\0';
+    }
+    return mida;
 }
 
 char *calcularMd5sum(Fotografia imagen)
@@ -419,13 +439,14 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
                         datos->imagenes.numImagenes = 0;
                         datos->imagenes.fotos = realloc(datos->imagenes.fotos, sizeof(Fotografia) * (datos->imagenes.numImagenes + 1));
                         strcpy(datos->imagenes.fotos[datos->imagenes.numImagenes].nomFoto, direntp->d_name);
-                        sprintf(datos->imagenes.fotos[datos->imagenes.numImagenes].path, "%s%c%s", path, '/', direntp->d_name);
+                        sprintf(datos->imagenes.fotos[datos->imagenes.numImagenes].path, "%s%s", path, direntp->d_name);
 
                         //Miramos el peso de la imagen
                         datos->imagenes.fotos[datos->imagenes.numImagenes].mida = calcularTamanoImagen(datos->imagenes.fotos[datos->imagenes.numImagenes]);
 
                         //Miramos el md5sum de la imagen
-                        strcpy(datos->imagenes.fotos[datos->imagenes.numImagenes].md5sum, calcularMd5sum(datos->imagenes.fotos[datos->imagenes.numImagenes]));
+                        //strcpy(datos->imagenes.fotos[datos->imagenes.numImagenes].md5sum, calcularMd5sum(datos->imagenes.fotos[datos->imagenes.numImagenes]));
+
                         datos->imagenes.numImagenes++;
                     }
                 }
