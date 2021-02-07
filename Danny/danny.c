@@ -7,11 +7,16 @@
 #include <signal.h>
 #include <stdio.h>
 
+
 //Librerias propias
 #include "Configuracion/configuracion.h"
 #include "Cliente/client.h"
+#include "Semaforo/semaphore.h"
 
 int closeDanny, sockfd, sockfd2;
+Configuracion *configuracion;
+Datos *datos;
+semaphore sem;
 
 void signalHandler()
 {
@@ -20,19 +25,29 @@ void signalHandler()
     closeDanny = EXIT_FAILURE;
 }
 
+void alarmaHandler()
+{
+    SEM_wait(&sem);
+    //Leemos el fichero de datos y la imagen en el directorio indicado en el fichero de configuracion
+    comprobarFichero(configuracion, datos);
+    signal(SIGALRM, alarmaHandler);
+    alarm(configuracion->tiempo);
+    SEM_signal(&sem);
+}
+
 int main(int argc, char *argv[])
 {
     int conf, /*conexionJack,*/ conexionWendy;
-    Configuracion *configuracion;
-    Datos *datos;
 
     //Iniciamos las variables y la memoria dinamica
     closeDanny = EXIT_SUCCESS;
     signal(SIGINT, signalHandler);
+    signal(SIGALRM, alarmaHandler);
     configuracion = (Configuracion *)malloc(sizeof(Configuracion));
     datos = (Datos *)malloc(sizeof(Datos));
     //conexionJack = EXIT_SUCCESS;
     conexionWendy = EXIT_SUCCESS;
+    SEM_init(&sem,1);
 
     //Comprobamos el argumento que sea correcto
     if (argc != 2)
@@ -52,40 +67,37 @@ int main(int argc, char *argv[])
     }
     else
     {
-        write(STDOUT_FILENO, "\nStarting Danny...\n\n", sizeof(char) * strlen("\nStarting Danny...\n\n"));
+        write(STDOUT_FILENO, "\nStarting Danny...\n\n", sizeof("\nStarting Danny...\n\n"));
         while (/*conexionJack == EXIT_SUCCESS &&*/ conexionWendy == EXIT_SUCCESS && closeDanny == EXIT_SUCCESS)
         {
 
             //Leemos el fichero de configuracion
             lecturaConfiguracion(&conf, configuracion);
+            alarm(configuracion->tiempo);
             close(conf);
 
             //Conectamos con los servidores
-            write(STDOUT_FILENO, "Connecting Jack...\n\n", sizeof(char) * strlen("Connecting Jack...\n\n"));
+            write(STDOUT_FILENO, "Connecting Jack...\n\n", sizeof("Connecting Jack...\n\n"));
             //conexionJack = configurarCliente((char *)configuracion->IPJack, configuracion->portJack, &sockfd, configuracion->nombre);
-            write(STDOUT_FILENO, "Connecting Wendy...\n\n", sizeof(char) * strlen("Connecting Wendy...\n\n"));
+            write(STDOUT_FILENO, "Connecting Wendy...\n\n", sizeof("Connecting Wendy...\n\n"));
             conexionWendy = configurarCliente((char *)configuracion->IPWendy, configuracion->portWendy, &sockfd2, configuracion->nombre);
             if (/*conexionJack == EXIT_SUCCESS &&*/ conexionWendy == EXIT_SUCCESS)
             {
 
-                while (closeDanny == EXIT_SUCCESS)
+                while (closeDanny == EXIT_SUCCESS && /*conexionJack == EXIT_SUCCESS &&*/ conexionWendy == EXIT_SUCCESS)
                 {
-                    //Leemos el fichero de datos y la imagen en el directorio indicado en el fichero de configuracion
-                    comprobarFichero(configuracion, datos);
-
                     //Enviamos los datos al Jack
+                    //write(STDOUT_FILENO, "Enviando datos al servidor Jack\n", sizeof("Enviando datos al servidor Jack\n"));
                     //enviarDatosJack(datos, &sockfd);
-                    //write(STDOUT_FILENO, "Enviando datos al servidor Jack\n", sizeof(strlen("Enviando datos al servidor Jack\n")));
 
-                    //Enviamos la imagen a Wendy
-                    enviarDatosWendy(datos, &sockfd2);
-                    write(STDOUT_FILENO, "Enviando imagen al servidor Wendy\n", sizeof("Enviando imagen al servidor Wendy\n"));
-
-                    //Prompt
-                    write(STDOUT_FILENO, "$", sizeof("$"));
-                    write(STDOUT_FILENO, configuracion->nombre, sizeof(strlen(configuracion->nombre)));
-                    write(STDOUT_FILENO, ":\n", sizeof(":\n"));
-                    sleep(configuracion->tiempo);
+                    if (datos->imagenes.numImagenes > 0)
+                    {
+                        SEM_wait(&sem);
+                        //Enviamos la imagen a Wendy
+                        write(STDOUT_FILENO, "Enviando imagenes al servidor Wendy\n", sizeof("Enviando imagenes al servidor Wendy\n"));
+                        enviarDatosWendy(datos, &sockfd2);
+                        SEM_signal(&sem);
+                    }
                 }
                 //Desconnexion de Jack
                 enviarTramaDesconec(&sockfd, configuracion->nombre);
@@ -102,7 +114,15 @@ int main(int argc, char *argv[])
             }
         }
     }
-    free(datos->imagenes.fotos);
+    if (datos->imagenes.numImagenes > 0)
+    {
+        for (int i = datos->imagenes.numImagenes - 1; i > 0; i--)
+        {
+            free(datos->imagenes.fotos[i].md5sum);
+            free(datos->imagenes.fotos[i].mida);
+        }
+        free(datos->imagenes.fotos);
+    }
     free(datos);
     free(configuracion->path);
     free(configuracion);

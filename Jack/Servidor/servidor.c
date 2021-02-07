@@ -349,9 +349,5 @@ void configurarServidor(int portJack)
     {
         close(newsock[i]);
     }
-    printf("newsock cerrados\n");
     close(sockfd);
-    printf("sockfd cerrado\n");
-
-    printf("threads cerrados\n");
 }

@@ -355,8 +355,9 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
     do
     {
         //Prompt
-        sprintf(buffer, "$%s:\n", configuracion->nombre);
-        write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
+        write(STDOUT_FILENO, "$", sizeof("$"));
+        write(STDOUT_FILENO, configuracion->nombre, sizeof(configuracion->nombre));
+        write(STDOUT_FILENO, ":\n", sizeof(":\n"));
 
         //Testing
         write(STDOUT_FILENO, "Testing...\n", sizeof(char) * strlen("Testing...\n"));
@@ -366,7 +367,7 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
         if (directorio == NULL)
         {
             write(STDOUT_FILENO, "No directory found\n", sizeof("No directory found\n"));
-            sleep(configuracion->tiempo);
+            //sleep(configuracion->tiempo);
         }
         else
         {
@@ -403,7 +404,7 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
             if (numArchivos == 0)
             {
                 write(STDOUT_FILENO, "No files found\n", sizeof("No files found\n"));
-                sleep(configuracion->tiempo);
+                //sleep(configuracion->tiempo);
             }
             else
             {
@@ -463,7 +464,7 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
                 if (hayTXT == 0)
                 {
                     write(STDOUT_FILENO, "No file .txt found\n", sizeof("No file .txt found\n"));
-                    sleep(configuracion->tiempo);
+                    //sleep(configuracion->tiempo);
                 }
             }
         }

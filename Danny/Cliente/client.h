@@ -19,6 +19,7 @@
 
 //Constantes
 #define TRAMA 115
+#define ESPERA 500
 
 int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre);
 

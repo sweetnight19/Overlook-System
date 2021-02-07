@@ -1,6 +1,6 @@
 all: danny
 
-danny.o: danny.c Configuracion/configuracion.h Cliente/client.h
+danny.o: danny.c Configuracion/configuracion.h Cliente/client.h Semaforo/semaphore.h
 	@gcc -c danny.c -Wall -Wextra
 	@echo "Compilando danny.c"
 
@@ -12,8 +12,12 @@ client.o: Cliente/client.c Cliente/client.h
 	@gcc -c Cliente/client.c -std=gnu99 -Wall -Wextra
 	@echo "Compilando client.c"
 
-danny: danny.o configuracion.o client.o
-	@gcc danny.o configuracion.o client.o -Wall -Wextra -o danny.exe
+semaphore.o: Semaforo/semaphore.c Semaforo/semaphore.h
+	@gcc -c Semaforo/semaphore.c -Wall -Wextra
+	@echo "Compilando semaforo.c"
+
+danny: danny.o configuracion.o client.o semaphore.o
+	@gcc danny.o configuracion.o client.o semaphore.o -Wall -Wextra -o danny.exe
 	@echo "Compilacion terminada!"
 
 clean:

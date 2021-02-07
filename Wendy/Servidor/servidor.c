@@ -6,18 +6,41 @@
 
 int cerrarThread;
 
+char *calcularMd5sum(char *path)
+{
+    char *md5sum;
+    int fdpipe[2], pid;
+
+    pipe(fdpipe);
+    pid = fork();
+
+    md5sum = (char *)malloc(sizeof(char) * MD5SUM);
+    if (pid == 0)
+    {
+        char *args[] = {"md5sum", path, NULL};
+        dup2(fdpipe[1], STDOUT_FILENO);
+        close(fdpipe[0]);
+        close(fdpipe[1]);
+        execvp(args[0], args);
+    }
+    else
+    {
+        wait(NULL);
+        close(fdpipe[1]);
+        read(fdpipe[0], md5sum, MD5SUM);
+        close(fdpipe[0]);
+    }
+    return md5sum;
+}
+
 void *TareasServidor(void *socket_desc)
 {
     //Get the socket descriptor
     int *newsock = (int *)socket_desc;
 
     int enviat = 0;
-    int i, j, fd;
-    char buffer[TRAMA], buffer2[TRAMA], wendy[6],
-        origen[ORIGEN], conexionOK[12], conexionKO[12],
-        dadesOK[9], dadesKO[9], error[15],
-        nomFitxer[NAMEFILE], mida[MD5SUM],
-        checksum[MD5SUM], nomEstacio[NOMBRE], *foto;
+    int i, j, fd, byte;
+    char buffer[TRAMA], buffer2[TRAMA], wendy[6], origen[ORIGEN], conexionOK[12], conexionKO[12], dadesOK[9], dadesKO[9], error[15], nomFitxer[NAMEFILE], mida[MD5SUM], checksum[MD5SUM], nomEstacio[NOMBRE], foto[100], path[100], imagenOk[10], imagenKo[10];
 
     strcpy(wendy, "WENDY");
     strcpy(conexionOK, "CONNEXIO OK");
@@ -25,15 +48,20 @@ void *TareasServidor(void *socket_desc)
     strcpy(dadesOK, "DADES OK");
     strcpy(dadesKO, "DADES KO");
     strcpy(error, "ERROR DE TRAMA");
+    strcpy(imagenKo, "IMATGE KO");
+    strcpy(imagenOk, "IMATGE OK");
 
+    //write(STDOUT_FILENO, "$Wendy:\n", sizeof("$Wendy:\n"));
+    //write(STDOUT_FILENO, "Waiting...\n", sizeof("Waiting...\n"));
     read(*newsock, buffer, TRAMA);
     while (buffer[14] != 'Q' && cerrarThread == EXIT_SUCCESS)
     {
         //Copiamos el "DANNY"
-        for (int i = 0; (i < ORIGEN) && (buffer[i - 1] != 'Y'); ++i)
+        for (int i = 0; i < ORIGEN && buffer[i] >= 'A' && buffer[i] <= 'Z'; i++)
         {
             origen[i] = buffer[i];
         }
+        origen[5] = '\0';
 
         //Ponemos "WENDY" para la salida
         for (int i = 0; i < (int)strlen(wendy); i++)
@@ -50,14 +78,13 @@ void *TareasServidor(void *socket_desc)
         //Responder a la trama de conexion
         if (strcmp(origen, "DANNY") == 0 && buffer[14] == 'C')
         {
-
             for (j = 0, i = 15; buffer[i] != '\0'; i++, j++)
             {
                 nomEstacio[j] = buffer[i];
             }
             nomEstacio[strlen(nomEstacio)] = '\0';
             write(STDOUT_FILENO, "Nueva connexion: ", sizeof("Nueva connexion: "));
-            write(STDOUT_FILENO, nomEstacio, sizeof(char) * strlen(nomEstacio));
+            write(STDOUT_FILENO, nomEstacio, strlen(nomEstacio));
             write(STDOUT_FILENO, "\n", sizeof("\n"));
             for (int count = 0; count < atoi(mida); i++)
             {
@@ -65,7 +92,7 @@ void *TareasServidor(void *socket_desc)
             }
 
             write(STDOUT_FILENO, "Enviando trama de connexion a ", sizeof("Enviando trama de connexion a "));
-            write(STDOUT_FILENO, nomEstacio, sizeof(strlen(nomEstacio)));
+            write(STDOUT_FILENO, nomEstacio, strlen(nomEstacio));
             write(STDOUT_FILENO, "\n", sizeof("\n"));
             buffer2[14] = 'O';
             i = 15;
@@ -85,7 +112,7 @@ void *TareasServidor(void *socket_desc)
             {
                 write(STDOUT_FILENO, "Enviando trama de connexion erronea a ",
                       sizeof("Enviando trama de connexion erronea a "));
-                write(STDOUT_FILENO, nomEstacio, sizeof(strlen(nomEstacio)));
+                write(STDOUT_FILENO, nomEstacio, strlen(nomEstacio));
                 write(STDOUT_FILENO, "\n", sizeof("\n"));
                 buffer2[14] = 'E';
                 i = 15;
@@ -104,9 +131,10 @@ void *TareasServidor(void *socket_desc)
         //Responder a la trama de imagenes
         if (strcmp(origen, "DANNY") == 0 && buffer[14] == 'I')
         {
+            write(STDOUT_FILENO, "-----------------------\n", sizeof("-----------------------\n"));
             write(STDOUT_FILENO, "Recibiendo trama de imagen de ",
                   sizeof("Recibiendo trama de imagen de "));
-            write(STDOUT_FILENO, nomEstacio, sizeof(strlen(nomEstacio)));
+            write(STDOUT_FILENO, nomEstacio, strlen(nomEstacio));
             write(STDOUT_FILENO, "\n", sizeof("\n"));
             i = 15;
             for (j = 0; buffer[i] != '#'; i++, j++)
@@ -114,41 +142,98 @@ void *TareasServidor(void *socket_desc)
                 nomFitxer[j] = buffer[i];
             }
             nomFitxer[j] = '\0';
-            printf("nomFitxer: %s\n", nomFitxer);
+            write(STDOUT_FILENO, "nombre del fichero: ", sizeof("nombre del fichero: "));
+            write(STDOUT_FILENO, nomFitxer, strlen(nomFitxer));
+            write(STDOUT_FILENO, "\n", sizeof("\n"));
             i++;
-            for (j = 0; buffer[i] != '#'; i++, j++)
+            for (j = 0; buffer[i] != '#' && buffer[i] >= '0' && buffer[i] <= '9'; i++, j++)
             {
                 mida[j] = buffer[i];
             }
             mida[j] = '\0';
-            printf("mida: %s\n", mida);
+            write(STDOUT_FILENO, "mida: ", sizeof("mida: "));
+            write(STDOUT_FILENO, mida, strlen(mida));
+            write(STDOUT_FILENO, "\n", sizeof("\n"));
+            i++;
             i++;
             for (j = 0; buffer[i] != '\0'; i++, j++)
             {
-                checksum[j] = buffer[i];
+                if (buffer[i] != '#')
+                {
+                    checksum[j] = buffer[i];
+                }
             }
             checksum[j] = '\0';
-            printf("checksum: %s\n", checksum);
-            printf("-----------------------\n");
-            foto = (char *)realloc(foto, sizeof(char) * atoi(mida));
-            j = 0;
-            for (int byte = 0; byte < atoi(mida); i++)
+            write(STDOUT_FILENO, "checksum: ", sizeof("checksum: "));
+            write(STDOUT_FILENO, checksum, strlen(checksum));
+            write(STDOUT_FILENO, "\n", sizeof("\n"));
+            strcpy(path, "Barry/");
+            for (int i = 6, j = 0; i < (int)strlen(nomFitxer) + 6; i++, j++)
             {
-                byte += read(*newsock, buffer, TRAMA);
-                byte -= 15;
-                for (int i = 15; i < TRAMA; i++, j++)
+                path[i] = nomFitxer[j];
+            }
+            fd = open(path, O_CREAT | O_WRONLY, 0666);
+            byte = atoi(mida);
+            for (int k = 0; byte > 100; k++)
+            {
+                byte -= 100;
+                read(*newsock, buffer, TRAMA);
+                for (int i = 15, j = 0; i < TRAMA; i++, j++)
                 {
                     foto[j] = buffer[i];
                 }
-                usleep(500);
-                printf("%d%%\n", byte * 100 / atoi(mida));
+                write(fd, foto, 100);
+                usleep(ESPERA);
             }
-            fd = open(nomFitxer, O_CREAT | O_WRONLY, 0666);
-            write(fd, foto, atoi(mida));
-            printf("foto creada\n");
+            read(*newsock, buffer, TRAMA);
+            for (int i = 15, j = 0; i < (byte + 15); i++, j++)
+            {
+                foto[j] = buffer[i];
+            }
+            write(fd, foto, byte);
+            write(STDOUT_FILENO, "Imagen recibida\n", sizeof("Imagen recibida\n"));
+            usleep(ESPERA);
+            if (strcmp(checksum, calcularMd5sum(path)) == 0)
+            {
+                write(STDOUT_FILENO, "Respondiendo trama de imagen a ",
+                      sizeof("Respondiendo trama de imagen a "));
+                write(STDOUT_FILENO, nomEstacio, strlen(nomEstacio));
+                write(STDOUT_FILENO, "\n", sizeof("\n"));
+
+                buffer2[14] = 'S';
+                i = 15;
+                for (int j = 0; i < TRAMA && j < (int)strlen(imagenOk); i++, j++)
+                {
+                    buffer2[i] = imagenOk[j];
+                }
+                for (int j = i; j < TRAMA; j++)
+                {
+                    buffer2[j] = '\0';
+                }
+            }
+            else
+            {
+                write(STDOUT_FILENO, "Respondiendo trama de imagen erronea a ",
+                      sizeof("Respondiendo trama de imagen erronea a "));
+                write(STDOUT_FILENO, nomEstacio, strlen(nomEstacio));
+                write(STDOUT_FILENO, "\n", sizeof("\n"));
+
+                buffer2[14] = 'R';
+                i = 15;
+                for (int j = 0; i < TRAMA && j < (int)strlen(imagenKo); i++, j++)
+                {
+                    buffer2[i] = imagenKo[j];
+                }
+                for (int j = i; j < TRAMA; j++)
+                {
+                    buffer2[j] = '\0';
+                }
+                remove(path);
+            }
+            write(STDOUT_FILENO, "-----------------------\n", sizeof("-----------------------\n"));
+
             close(fd);
-            free(foto);
-            enviat = 2;
+            enviat = 1;
         }
         else
         {
@@ -156,7 +241,7 @@ void *TareasServidor(void *socket_desc)
             {
                 write(STDOUT_FILENO, "Enviando trama de datos erronea a ",
                       sizeof("Enviando trama de datos erronea a "));
-                write(STDOUT_FILENO, nomEstacio, sizeof(strlen(nomEstacio)));
+                write(STDOUT_FILENO, nomEstacio, strlen(nomEstacio));
                 write(STDOUT_FILENO, "\n", sizeof("\n"));
                 buffer2[14] = 'K';
                 i = 15;
@@ -192,9 +277,10 @@ void *TareasServidor(void *socket_desc)
         if (enviat == 1)
         {
             write(*newsock, buffer2, TRAMA);
+            write(STDOUT_FILENO, "Waiting...\n", sizeof("Waiting...\n"));
             read(*newsock, buffer, TRAMA);
         }
-        if (enviat == 2)
+        if (enviat == 0)
         {
             read(*newsock, buffer, TRAMA);
         }
@@ -249,6 +335,9 @@ void configurarServidor(int portJack)
     listen(sockfd, NUM_CLIENTES);
     struct sockaddr_in c_addr;
     socklen_t c_len = sizeof(c_addr);
+
+    write(STDOUT_FILENO, "$Wendy:\n", sizeof("$Wendy:\n"));
+    write(STDOUT_FILENO, "Waiting...\n", sizeof("Waiting...\n"));
 
     while (cerrarThread == EXIT_SUCCESS)
     {
