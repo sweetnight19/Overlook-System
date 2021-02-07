@@ -9,7 +9,7 @@ configuracion.o: Configuracion/configuracion.c Configuracion/configuracion.h
 	@echo "Compilando configuracion.c"
 
 client.o: Cliente/client.c Cliente/client.h
-	@gcc -c Cliente/client.c -Wall -Wextra
+	@gcc -c Cliente/client.c -std=gnu99 -Wall -Wextra
 	@echo "Compilando client.c"
 
 danny: danny.o configuracion.o client.o

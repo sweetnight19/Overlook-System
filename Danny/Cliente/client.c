@@ -69,33 +69,65 @@ int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre)
 
 void enviarDatosWendy(Datos *datos, int *sockfd)
 {
-    char buffer[TRAMA], origen[6];
+    int j, fd;
+    char buffer[TRAMA], danny[6], lectura[100];
 
-    strcpy(origen, "DANNY");
-    for (int i = 0; i < (int)strlen(origen); i++)
+    strcpy(danny, "DANNY");
+    danny[strlen(danny)] = '\0';
+
+    for (int j = 0; j < (int)strlen("DANNY"); j++)
     {
-        buffer[i] = origen[i];
+        buffer[j] = danny[j];
     }
-    for (int i = strlen(buffer); i < 14; i++)
+    for (int j = (int)strlen(buffer); j < 14; j++)
     {
-        buffer[i] = '\0';
+        buffer[j] = '\0';
     }
+
     buffer[14] = 'I';
-    printf("nomFoto: %s\n", datos->imagenes.fotos[0].nomFoto);
-    strcat(buffer, datos->imagenes.fotos[0].nomFoto);
-    strcat(buffer, "#");
-    printf("mida: %s\n", datos->imagenes.fotos[0].mida);
-    strcat(buffer, datos->imagenes.fotos[0].mida);
-    strcat(buffer, "#");
-    printf("md5sum: %s\n", datos->imagenes.fotos[0].md5sum);
-    strcat(buffer, datos->imagenes.fotos[0].md5sum);
-    for (int i = strlen(buffer); i < TRAMA; i++)
+    j = 15;
+    for (int i = 0; i < (int)strlen(datos->imagenes.fotos[0].nomFoto); i++, j++)
     {
-        origen[i] = '\0';
+        buffer[j] = datos->imagenes.fotos[0].nomFoto[i];
     }
-    printf("trama previa de enviar la foto: %s\n", buffer);
-    //write(STDOUT_FILENO, buffer, sizeof(char) * TRAMA);
-    write(*sockfd, buffer, sizeof(char) * TRAMA);
+    j++;
+    buffer[j] = '#';
+    j++;
+    for (int i = 0; i < (int)strlen(datos->imagenes.fotos[0].mida); i++, j++)
+    {
+        buffer[j] = datos->imagenes.fotos[0].mida[i];
+    }
+    j++;
+    buffer[j] = '#';
+    j++;
+    for (int i = 0; i < MD5SUM; i++, j++)
+    {
+        buffer[j] = datos->imagenes.fotos[0].md5sum[i];
+    }
+    j++;
+    while (j < TRAMA)
+    {
+        buffer[j] = '\0';
+        j++;
+    }
+    write(*sockfd, buffer, TRAMA);
+    printf("Enviado trama de informacion\n");
+    usleep(500);
+    buffer[14] = 'F';
+    fd = open(datos->imagenes.fotos[0].path, O_RDONLY);
+    for (int byte = 0, k = 0; byte < atoi(datos->imagenes.fotos[0].mida); k++)
+    {
+        byte += read(fd, lectura, 100);
+        j = 15;
+        for (int i = 0; i < 100; i++, j++)
+        {
+            buffer[j] = lectura[i];
+        }
+        write(*sockfd, buffer, TRAMA);
+        usleep(500);
+        printf("byte= %d\n", byte);
+    }
+    close(fd);
 }
 
 void enviarDatosJack(Datos *datos, int *sockfd)

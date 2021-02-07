@@ -312,7 +312,6 @@ char *calcularTamanoImagen(Fotografia imagen)
             byte = read(fdpipe[0], &c, sizeof(char));
         }
         close(fdpipe[0]);
-        mida[strlen(mida)] = '\0';
     }
     return mida;
 }
@@ -325,7 +324,7 @@ char *calcularMd5sum(Fotografia imagen)
     pipe(fdpipe);
     pid = fork();
 
-    md5sum = (char *)malloc(sizeof(char) * (MD5SUM + 1));
+    md5sum = (char *)malloc(sizeof(char) * MD5SUM);
     if (pid == 0)
     {
         char *args[] = {"md5sum", imagen.path, NULL};
@@ -338,8 +337,7 @@ char *calcularMd5sum(Fotografia imagen)
     {
         wait(NULL);
         close(fdpipe[1]);
-        read(fdpipe[0], md5sum, sizeof(char) * MD5SUM);
-        md5sum[MD5SUM + 1] = '\0';
+        read(fdpipe[0], md5sum, MD5SUM);
         close(fdpipe[0]);
     }
     return md5sum;
@@ -425,6 +423,7 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
                 }
                 archivoTXT[strlen(archivoTXT)] = '/';
                 strcpy(path, archivoTXT);
+                datos->imagenes.numImagenes = 0;
                 while ((direntp = readdir(directorio)) != NULL)
                 {
                     //Buscamos el fichero .txt para guardar el path con su nombre y printamos el nombre
@@ -437,6 +436,7 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
                         sprintf(buffer, "%s\n", direntp->d_name);
                         write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
                     }
+
                     //Si existen archivos .jpg, los printamos
                     if (direntp->d_name[strlen(direntp->d_name) - 1] == 'g' &&
                         direntp->d_name[strlen(direntp->d_name) - 2] == 'p' &&
@@ -447,7 +447,6 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
                         write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
 
                         //Hacemos realloc para la nueva foto
-                        datos->imagenes.numImagenes = 0;
                         datos->imagenes.fotos = realloc(datos->imagenes.fotos, sizeof(Fotografia) * (datos->imagenes.numImagenes + 1));
                         strcpy(datos->imagenes.fotos[datos->imagenes.numImagenes].nomFoto, direntp->d_name);
                         sprintf(datos->imagenes.fotos[datos->imagenes.numImagenes].path, "%s%s", path, direntp->d_name);
@@ -456,8 +455,7 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
                         datos->imagenes.fotos[datos->imagenes.numImagenes].mida = calcularTamanoImagen(datos->imagenes.fotos[datos->imagenes.numImagenes]);
 
                         //Miramos el md5sum de la imagen
-                        strcpy(datos->imagenes.fotos[datos->imagenes.numImagenes].md5sum, calcularMd5sum(datos->imagenes.fotos[datos->imagenes.numImagenes]));
-
+                        datos->imagenes.fotos[datos->imagenes.numImagenes].md5sum = calcularMd5sum(datos->imagenes.fotos[datos->imagenes.numImagenes]);
                         datos->imagenes.numImagenes++;
                     }
                 }

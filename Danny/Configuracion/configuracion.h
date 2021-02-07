@@ -42,7 +42,7 @@ typedef struct
     char path[BUFFER];
     char nomFoto[BUFFER];
     char *mida;
-    char md5sum[MD5SUM];
+    char *md5sum;
 } Fotografia;
 
 typedef struct

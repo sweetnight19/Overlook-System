@@ -78,8 +78,8 @@ int main(int argc, char *argv[])
                     //write(STDOUT_FILENO, "Enviando datos al servidor Jack\n", sizeof(strlen("Enviando datos al servidor Jack\n")));
 
                     //Enviamos la imagen a Wendy
-                    //enviarDatosWendy(datos, &sockfd2);
-                    //write(STDOUT_FILENO, "Enviando imagen al servidor Wendy\n", sizeof(strlen("Enviando imagen al servidor Wendy\n")));
+                    enviarDatosWendy(datos, &sockfd2);
+                    write(STDOUT_FILENO, "Enviando imagen al servidor Wendy\n", sizeof("Enviando imagen al servidor Wendy\n"));
 
                     //Prompt
                     write(STDOUT_FILENO, "$", sizeof("$"));

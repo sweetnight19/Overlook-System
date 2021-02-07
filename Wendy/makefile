@@ -9,7 +9,7 @@ configuracion.o: Configuracion/configuracion.c
 	@echo "Compilando configuracion.c"
 
 servidor.o: Servidor/servidor.c Servidor/servidor.h
-	@gcc -c Servidor/servidor.c -Wall -Wextra -lpthread
+	@gcc -c Servidor/servidor.c -std=gnu99 -Wall -Wextra -lpthread
 	@echo "Compilando servidor.c"
 
 wendy: wendy.o configuracion.o servidor.o 

@@ -9,6 +9,8 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +20,7 @@
 #include <signal.h>
 #include <pthread.h>
 #include <signal.h>
+#include <fcntl.h>
 
 //Librerias propias
 #include "../Configuracion/configuracion.h"
