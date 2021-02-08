@@ -35,8 +35,19 @@
 #define HORA 8
 #define FECHA 10
 
+/*
+* Configuracio del servidor Jack
+*/
 void configurarServidor(int portJack, int *cerrar, Reg_estacions *reg_estacions, semaphore *sem_read_1,semaphore *sem_write_1);
+
+/*
+* Thread que es crea en la nova connexio d'un client, gestiona les trames
+*/
 void *TareasServidor(void *socket_desc);
+
+/*
+* Procesa les dades de la trama i escriu en la memoria compartida
+*/
 void processarLloyd(char buffer[TRAMA], char nom_estacio[NOMBRE]);
 
 #endif

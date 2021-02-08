@@ -5,7 +5,7 @@ jack.o: jack.c Configuracion/configuracion.h Lloyd/lloyd.h Semaforo/semaphore.h
 	@echo "Compilando jack.c"
 
 configuracion.o: Configuracion/configuracion.c
-	@gcc -c Configuracion/configuracion.c -Wall -Wextra
+	@gcc -c Configuracion/configuracion.c -Wall -Wextra 
 	@echo "Compilando configuracion.c"
 
 servidor.o: Servidor/servidor.c Servidor/servidor.h Semaforo/semaphore.h Lloyd/lloyd.h

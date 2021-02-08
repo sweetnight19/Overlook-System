@@ -3,6 +3,9 @@
  */
 #include "client.h"
 
+/*
+* Configuracio del client
+*/
 int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre)
 {
     int i;
@@ -67,6 +70,9 @@ int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre)
     }
 }
 
+/*
+*Encarregada de enviar les imatges al servidor Wendy
+*/
 void enviarDatosWendy(Datos *datos, int *sockfd)
 {
     int j, fd, num_foto, byte;
@@ -162,6 +168,9 @@ void enviarDatosWendy(Datos *datos, int *sockfd)
     datos->imagenes.numImagenes = 0;
 }
 
+/*
+*Encarregada de enviar les dades al servidor Jack
+*/
 void enviarDatosJack(Datos *datos, int *sockfd)
 {
     int j;
@@ -231,6 +240,9 @@ void enviarDatosJack(Datos *datos, int *sockfd)
     write(STDOUT_FILENO, "\n\n", sizeof("\n\n"));
 }
 
+/*
+* Envia la trama de desconexio al servidor indicat per el socket
+*/
 void enviarTramaDesconec(int *sockfd, char *nombre)
 {
     int j;

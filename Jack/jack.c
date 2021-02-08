@@ -15,9 +15,11 @@
 #include "Lloyd/lloyd.h"
 #include "Semaforo/semaphore.h"
 
-Configuracion *configuracion;
 int cerrar;
 
+/*
+* Captura el SIGINT i envia la senyal de apagar a tots els procesos
+*/
 void signalHandler()
 {
     write(STDOUT_FILENO, "\nDisconnecting Jack...\n", sizeof("\nDisconnecting Jack...\n"));
@@ -29,7 +31,8 @@ int main(int argc, char *argv[])
     int conf;
     pid_t pid;
     Reg_estacions *reg_estacions;
-    semaphore sem_read, sem_write;
+    Configuracion *configuracion;
+    semaphore sem_write, sem_read;
     key_t key_read, key_write;
 
     cerrar = EXIT_SUCCESS;
@@ -64,12 +67,14 @@ int main(int argc, char *argv[])
         {
             write(STDOUT_FILENO, "\nERROR: No se ha podido crear el semaforo correctamente.\n",
                   sizeof(char) * strlen("\nERROR: No se ha podido crear el semaforo correctamente.\n"));
+            return EXIT_FAILURE;
         }
 
         if (SEM_constructor_with_name(&sem_read, key_read) < 0)
         {
             write(STDOUT_FILENO, "\nERROR: No se ha podido crear el semaforo correctamente.\n",
                   sizeof(char) * strlen("\nERROR: No se ha podido crear el semaforo correctamente.\n"));
+            return EXIT_FAILURE;
         }
 
         SEM_init(&sem_write, 1);
@@ -83,11 +88,12 @@ int main(int argc, char *argv[])
         {
             write(STDOUT_FILENO, "\nERROR: No se ha podido crear el fork correctamente.\n",
                   sizeof(char) * strlen("\nERROR: No se ha podido crear el fork correctamente.\n"));
+            return EXIT_FAILURE;
         }
         else if (pid == 0) //ENTREM A LLOYD
         {
-            processarDades(reg_estacions, &sem_write, &sem_read);
-            munmap(reg_estacions, sizeof(reg_estacions));
+            processarDades(reg_estacions, &sem_write, &sem_read, &cerrar);
+            munmap(reg_estacions, sizeof(Reg_estacions));
         }
         else
         {
@@ -97,11 +103,12 @@ int main(int argc, char *argv[])
             write(STDOUT_FILENO, "\nStarting Jack...\n\n", sizeof("\nStarting Jack...\n\n"));
             write(STDOUT_FILENO, "$Jack:\n", sizeof("$Jack:\n"));
             write(STDOUT_FILENO, "Waiting...\n", sizeof("Waiting...\n"));
-
             configurarServidor(configuracion->portJack, &cerrar, reg_estacions, &sem_read, &sem_write);
-
-            munmap(reg_estacions, sizeof(reg_estacions));
+            wait(NULL);
+            munmap(reg_estacions, sizeof(Reg_estacions));
         }
+
+        //Lliberar memoria
         free(configuracion);
         SEM_destructor(&sem_read);
         SEM_destructor(&sem_write);

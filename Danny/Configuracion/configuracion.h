@@ -95,8 +95,14 @@ void lecturaPrecipitacion(int *txtfd, Datos *datos);
 
 void comprobarFichero(Configuracion *configuracion, Datos *datos);
 
+/*
+* Calcular el tamany de la imatge abans de enviar
+*/
 char *calcularTamanoImagen(Fotografia imagen);
 
+/*
+*Calcula  el checksum de la imatge
+*/
 char *calcularMd5sum(Fotografia imagen);
 
 #endif

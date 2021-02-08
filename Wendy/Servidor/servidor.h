@@ -33,9 +33,24 @@
 #define MD5SUM 32
 #define ESPERA 500
 
+/*
+* Configura el servidor Wendy
+*/
 void configurarServidor(int portJack);
+
+/*
+* Captura el SIGINT i ordena la senyal de tancar els threads
+*/
 void signalHandler();
+
+/*
+* Thread creat a la connexio de un client nou, gestiona les trames i la comunicacio
+*/
 void *TareasServidor(void *socket_desc);
+
+/*
+*Calcula el checksum de la foto per saber si s'ha rebut correctament
+*/
 char *calcularMd5sum(char *path);
 
 #endif

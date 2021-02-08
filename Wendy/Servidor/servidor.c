@@ -6,6 +6,9 @@
 
 int cerrarThread;
 
+/*
+*Calcula el checksum de la foto per saber si s'ha rebut correctament
+*/
 char *calcularMd5sum(char *path)
 {
     char *md5sum;
@@ -33,6 +36,9 @@ char *calcularMd5sum(char *path)
     return md5sum;
 }
 
+/*
+* Thread creat a la connexio de un client nou, gestiona les trames i la comunicacio
+*/
 void *TareasServidor(void *socket_desc)
 {
     //Get the socket descriptor
@@ -296,12 +302,18 @@ void *TareasServidor(void *socket_desc)
     return NULL;
 }
 
+/*
+* Captura el SIGINT i ordena la senyal de tancar els threads
+*/
 void signalHandler()
 {
     write(STDOUT_FILENO, "\nDisconnecting Wendy...\n", sizeof("\nDisconnecting Wendy...\n"));
     cerrarThread = EXIT_FAILURE;
 }
 
+/*
+* Configura el servidor Wendy
+*/
 void configurarServidor(int portJack)
 {
     int numClientes, newsock[NUM_CLIENTES], sockfd;

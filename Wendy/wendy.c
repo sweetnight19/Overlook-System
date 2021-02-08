@@ -47,6 +47,8 @@ int main(int argc, char *argv[])
             write(STDOUT_FILENO, "\nStarting Wendy...\n\n", sizeof("\nStarting Wendy...\n\n"));
             configurarServidor(configuracion->portWendy);
         }
+
+        //Lliberar memoria
         free(configuracion);
         return 0;
     }

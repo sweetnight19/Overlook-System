@@ -5,12 +5,14 @@
 #include "servidor.h"
 
 Reg_estacions *trama_estacio;
-semaphore *sem_write;
-semaphore *sem_read;
+semaphore *sem_write, *sem_read;
 
 int numClientes, newsock[NUM_CLIENTES], *cerrarThread, sockfd;
 pthread_t threadClientes[NUM_CLIENTES];
 
+/*
+* Procesa les dades de la trama i escriu en la memoria compartida
+*/
 void processarLloyd(char buffer[TRAMA], char nom_estacio[NOMBRE])
 {
     int i;
@@ -54,16 +56,19 @@ void processarLloyd(char buffer[TRAMA], char nom_estacio[NOMBRE])
     SEM_wait(sem_write);
     strcpy(trama_estacio->nom_estacio, nom_estacio);
     trama_estacio->humitat = atof(humitat);
-    printf("atof(humitat):%f.2\n", atof(humitat));
+    //printf("atof(humitat):%f.2\n", atof(humitat));
     trama_estacio->temperatura = atof(temperatura);
-    printf("atof(temperatura):%f.2\n", atof(temperatura));
+    //printf("atof(temperatura):%f.2\n", atof(temperatura));
     trama_estacio->precipitacio = atof(precipitacio);
-    printf("atof(precipitacio):%f.2\n", atof(precipitacio));
+    //printf("atof(precipitacio):%f.2\n", atof(precipitacio));
     trama_estacio->pressio_atmos = atof(pressio_atmosferica);
-    printf("atof(pressio_atm):%f.2\n", atof(pressio_atmosferica));
+    //printf("atof(pressio_atm):%f.2\n", atof(pressio_atmosferica));
     SEM_signal(sem_read);
 }
 
+/*
+* Thread que es crea en la nova connexio d'un client, gestiona les trames
+*/
 void *TareasServidor(void *socket_desc)
 {
     //Get the socket descriptor
@@ -226,6 +231,9 @@ void *TareasServidor(void *socket_desc)
     return NULL;
 }
 
+/*
+* Configuracio del servidor Jack
+*/
 void configurarServidor(int portJack, int *cerrar, Reg_estacions *reg_estacions, semaphore *sem_read_1, semaphore *sem_write_1)
 {
     uint16_t port;
@@ -237,8 +245,8 @@ void configurarServidor(int portJack, int *cerrar, Reg_estacions *reg_estacions,
     trama_estacio = reg_estacions;
     sem_read = sem_read_1;
     sem_write = sem_write_1;
-    //*cerrar = EXIT_SUCCESS;
-    //cerrarThread = EXIT_SUCCESS;
+
+    SEM_signal(sem_write);
 
     sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP);
     if (sockfd < 0)

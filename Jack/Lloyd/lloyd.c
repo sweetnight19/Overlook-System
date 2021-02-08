@@ -5,134 +5,91 @@
 semaphore sem;
 Estacions estructura_estacions;
 
+/*
+*Alarma que captura per anar escribint en el fitxer Hallorant les estadistiques
+*/
 void alarmHandler()
 {
-    Estacions *estructura_estacions, buffer_estructura_estacions;
-
-    estructura_estacions = (Estacions *)arg;
-    buffer_estructura_estacions.estacions = (Estacio *)malloc(sizeof(Estacio));
-
     int fd;
-    char buffer[300];
+    char buffer[BUFFER];
+    fd = open("Hallorant.txt", O_CREAT | O_WRONLY, 0666);
 
-    // INICIALITZACIO DEL THREAD
-
-    while (flag == true)
+    if (fd < 0)
     {
-        fd = open("../Hallorant.txt", O_WRONLY | O_CREAT | O_TRUNC);
-
-        if (fd < 0) // NO S'HA POGUT OBRIR EL FITXER DE LES ESTADISTIQUES DE LES ESTACIONS
+        write(STDOUT_FILENO, "\nERROR: No ha sido posible abrir el fichero de las estadisticas.\n",
+              sizeof(char) * strlen("\nERROR: No ha sido posible abrir el fichero de las estadisticas.\n"));
+    }
+    else
+    {
+        SEM_wait(&sem);
+        for (int i = 0; i < estructura_estacions.num_estacions; i++)
         {
-            write(STDOUT_FILENO, "\nERROR: No ha sido posible abrir el fichero de las estadisticas.\n",
-                  sizeof(char) * strlen("\nERROR: No ha sido posible abrir el fichero de las estadisticas.\n"));
-        }
-        else
-        {
-            while (fd >= 0)
-            {
-                SEM_wait(&sem);
-
-                //INCIALITZACIO DE BUFFER_ESTRUCTURA_ESTACIONS PER QUE MONTSERRAT NO ES QUEIXI
-                // COPIA DE LES DADES DE LES ESTACIONS EN UNA ESTRUCTURA QUE ACTUA COM A BUFFER PER COPIAR-HO AL DOCUMENT
-
-                for (int i = 0; i < estructura_estacions->num_estacions; i++)
-                {
-                    strcpy(buffer_estructura_estacions.estacions[i].mitjana_estacions.nom_estacio, " ");
-                    strcpy(buffer_estructura_estacions.estacions[i].mitjana_estacions.nom_estacio, estructura_estacions->estacions[i].nom);
-
-                    buffer_estructura_estacions.estacions[i].mitjana_estacions.humitat = 0.0;
-                    buffer_estructura_estacions.estacions[i].mitjana_estacions.humitat = estructura_estacions->estacions[i].mitjana_estacions.humitat;
-
-                    buffer_estructura_estacions.estacions[i].mitjana_estacions.temperatura = 0.0;
-                    buffer_estructura_estacions.estacions[i].mitjana_estacions.temperatura = estructura_estacions->estacions[i].mitjana_estacions.temperatura;
-
-                    buffer_estructura_estacions.estacions[i].mitjana_estacions.precipitacio = 0.0;
-                    buffer_estructura_estacions.estacions[i].mitjana_estacions.precipitacio = estructura_estacions->estacions[i].mitjana_estacions.precipitacio;
-
-                    buffer_estructura_estacions.estacions[i].mitjana_estacions.pressio_atmos = 0.0;
-                    buffer_estructura_estacions.estacions[i].mitjana_estacions.pressio_atmos = estructura_estacions->estacions[i].mitjana_estacions.pressio_atmos;
-
-                    sprintf(buffer, "%s:\nHumitat mitjana: %.2f,\nTemperatura mitjana: %.2f,\nPrecipitacio mitjana: %.2f,\nPressio atmosferica mitjana: %.2f\n\n",
-                            buffer_estructura_estacions.estacions[i].nom,
-                            buffer_estructura_estacions.estacions[i].mitjana_estacions.humitat,
-                            buffer_estructura_estacions.estacions[i].mitjana_estacions.temperatura,
-                            buffer_estructura_estacions.estacions[i].mitjana_estacions.precipitacio,
-                            buffer_estructura_estacions.estacions[i].mitjana_estacions.pressio_atmos);
-                    write(fd, buffer, sizeof(char) * strlen(buffer));
-                }
-                sleep(15);
-            }
-
-            SEM_signal(&sem);
-            close(fd);
+            sprintf(buffer, "%s:\nHumedad avg: %.2f,\nTemperatura avg: %.2f,\nPrecipitacion avg: %.2f,\nPression atmosferica avg: %.2f\n\n",
+                    estructura_estacions.estacions[i].nom,
+                    estructura_estacions.estacions[i].mitjana_estacions.humitat,
+                    estructura_estacions.estacions[i].mitjana_estacions.temperatura,
+                    estructura_estacions.estacions[i].mitjana_estacions.precipitacio,
+                    estructura_estacions.estacions[i].mitjana_estacions.pressio_atmos);
+            write(fd, buffer, strlen(buffer));
         }
     }
-
-    return NULL;
+    SEM_signal(&sem);
+    close(fd);
+    signal(SIGALRM, alarmHandler);
+    alarm(HALLORANT);
 }
 
-void processarDades(Reg_estacions *reg_estacions, semaphore *sem_write, semaphore *sem_read)
+/*
+* Proces principal de Lloyd
+*/
+void processarDades(Reg_estacions *reg_estacions, semaphore *sem_write, semaphore *sem_read, int *cerrar)
 {
-    signal(SIGALRM, estacio);
+    int posicio_estacio;
+
+    signal(SIGALRM, alarmHandler);
     SEM_init(&sem, 1);
     alarm(HALLORANT);
 
+    posicio_estacio = -1;
     estructura_estacions.num_estacions = 0;
     estructura_estacions.estacions = (Estacio *)malloc(sizeof(Estacio));
-
     do
     {
         SEM_wait(sem_read);
-
         for (int i = 0; i < estructura_estacions.num_estacions; i++)
         {
             if (strcmp(reg_estacions->nom_estacio, estructura_estacions.estacions[i].nom) == 0)
             {
-                posicio = i;
+                posicio_estacio = i;
             }
-
-            SEM_wait(&sem);
-
-            if (posicio < 0) //SI NO S'HA TROBAT LA POSICIO DE LA ESTACIO DINS L'ARRAY, VOL DIR QUE NO EXISTEIX,
-                             //PER AIXO ES GUARDEN LES DADES DE LA NOVA ESTACIO DINS L'ARRAY
-            {
-                estructura_estacions.num_estacions++;
-                estructura_estacions.estacions = (Estacio *)realloc(estructura_estacions.estacions,
-                                                                    sizeof(Estacio) * estructura_estacions.num_estacions);
-                strcpy(estructura_estacions.estacions[estructura_estacions.num_estacions].nom, reg_estacions->nom_estacio);
-                estructura_estacions.estacions[estructura_estacions.num_estacions - 1].num_lectures++;
-                estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.humitat =
-                    reg_estacions->humitat;
-                estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.temperatura =
-                    reg_estacions->temperatura;
-                estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.precipitacio =
-                    reg_estacions->precipitacio;
-                estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.pressio_atmos =
-                    reg_estacions->pressio_atmos;
-            }
-            else
-            {
-                estructura_estacions.estacions[posicio].mitjana_estacions.humitat = reg_estacions->humitat;
-                estructura_estacions.estacions[posicio].mitjana_estacions.temperatura = reg_estacions->temperatura;
-                estructura_estacions.estacions[posicio].mitjana_estacions.precipitacio = reg_estacions->precipitacio;
-                estructura_estacions.estacions[posicio].mitjana_estacions.pressio_atmos = reg_estacions->pressio_atmos;
-                estructura_estacions.estacions[posicio].num_lectures++;
-
-                posicio = -39;
-            }
-
-            SEM_signal(&sem);
-            SEM_signal(sem_write);
         }
-    } while (flag == true);
+        SEM_wait(&sem);
 
-    int_thread = pthread_join(thread, NULL);
+        if (posicio_estacio < 0)
+        {
 
-    if (int_thread < 0)
-    {
-        write(STDOUT_FILENO, "\nERROR: No se ha podido cerrar correctamente el thread.\n",
-              sizeof(char) * strlen("\nERROR: No se ha podido cerrar correctamente el thread.\n"));
-    }
+            estructura_estacions.num_estacions++;
+            estructura_estacions.estacions = (Estacio *)realloc(estructura_estacions.estacions, sizeof(Estacio) * estructura_estacions.num_estacions);
+            strcpy(estructura_estacions.estacions[estructura_estacions.num_estacions - 1].nom, reg_estacions->nom_estacio);
+            estructura_estacions.estacions[estructura_estacions.num_estacions - 1].num_lectures = 1;
+            estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.temperatura = reg_estacions->temperatura;
+            estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.humitat = reg_estacions->humitat;
+            estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.pressio_atmos = reg_estacions->pressio_atmos;
+            estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.precipitacio = reg_estacions->precipitacio;
+        }
+        else
+        {
 
+            estructura_estacions.estacions[posicio_estacio].mitjana_estacions.temperatura = ((estructura_estacions.estacions[posicio_estacio].mitjana_estacions.temperatura * estructura_estacions.estacions[posicio_estacio].num_lectures) + reg_estacions->temperatura) / (estructura_estacions.estacions[posicio_estacio].num_lectures + 1);
+            estructura_estacions.estacions[posicio_estacio].mitjana_estacions.humitat = ((estructura_estacions.estacions[posicio_estacio].mitjana_estacions.humitat * estructura_estacions.estacions[posicio_estacio].num_lectures) + reg_estacions->humitat) / (estructura_estacions.estacions[posicio_estacio].num_lectures + 1);
+            estructura_estacions.estacions[posicio_estacio].mitjana_estacions.pressio_atmos = ((estructura_estacions.estacions[posicio_estacio].mitjana_estacions.pressio_atmos * estructura_estacions.estacions[posicio_estacio].num_lectures) + reg_estacions->pressio_atmos) / (estructura_estacions.estacions[posicio_estacio].num_lectures + 1);
+            estructura_estacions.estacions[posicio_estacio].mitjana_estacions.precipitacio = ((estructura_estacions.estacions[posicio_estacio].mitjana_estacions.precipitacio * estructura_estacions.estacions[posicio_estacio].num_lectures) + reg_estacions->precipitacio) / (estructura_estacions.estacions[posicio_estacio].num_lectures + 1);
+            estructura_estacions.estacions[posicio_estacio].num_lectures++;
+        }
+        posicio_estacio = -1;
+        SEM_signal(&sem);
+        SEM_signal(sem_write);
+    } while (*cerrar == EXIT_SUCCESS);
+    free(estructura_estacions.estacions);
     SEM_destructor(&sem);
 }

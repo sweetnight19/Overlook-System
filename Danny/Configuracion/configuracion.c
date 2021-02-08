@@ -285,6 +285,9 @@ void lecturaPrecipitacion(int *txtfd, Datos *datos)
     write(STDOUT_FILENO, "\n", sizeof(char) * strlen("\n"));
 }
 
+/*
+* Calcular el tamany de la imatge abans de enviar
+*/
 char *calcularTamanoImagen(Fotografia imagen)
 {
     char *mida, c;
@@ -319,6 +322,9 @@ char *calcularTamanoImagen(Fotografia imagen)
     return mida;
 }
 
+/*
+*Calcula  el checksum de la imatge
+*/
 char *calcularMd5sum(Fotografia imagen)
 {
     char *md5sum;

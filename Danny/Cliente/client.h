@@ -21,12 +21,24 @@
 #define TRAMA 115
 #define ESPERA 500
 
+/*
+* Configuracio del client
+*/
 int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre);
 
+/*
+*Encarregada de enviar les dades al servidor Jack
+*/
 void enviarDatosJack(Datos *datos, int *sockfd);
 
+/*
+*Encarregada de enviar les imatges al servidor Wendy
+*/
 void enviarDatosWendy(Datos *datos, int *sockfd);
 
+/*
+* Envia la trama de desconexio al servidor indicat per el socket
+*/
 void enviarTramaDesconec(int *sockfd2,char *nombre);
 
 #endif

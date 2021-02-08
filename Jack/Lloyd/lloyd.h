@@ -20,6 +20,7 @@
 //Constantes
 #define NOM_ESTACIO 100
 #define HALLORANT 120
+#define BUFFER 500
 
 //Tipos propios
 typedef struct
@@ -44,7 +45,14 @@ typedef struct
     Estacio *estacions;
 } Estacions;
 
+/*
+*Alarma que captura per anar escribint en el fitxer Hallorant les estadistiques
+*/
 void alarmHandler();
-void processarDades(Reg_estacions *reg_estacions, semaphore *sem_write, semaphore *sem_read);
+
+/*
+* Proces principal de Lloyd
+*/
+void processarDades(Reg_estacions *reg_estacions, semaphore *sem_write, semaphore *sem_read, int *cerrar);
 
 #endif
