@@ -446,9 +446,15 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
                     {
                         sprintf(buffer, "%s\n", direntp->d_name);
                         write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
-
-                        //Hacemos realloc para la nueva foto
-                        datos->imagenes.fotos = realloc(datos->imagenes.fotos, sizeof(Fotografia) * (datos->imagenes.numImagenes + 1));
+                        if (datos->imagenes.numImagenes == 0)
+                        {
+                            datos->imagenes.fotos = (Fotografia *)malloc(sizeof(Fotografia));
+                        }
+                        else
+                        {
+                            //Hacemos realloc para la nueva foto
+                            datos->imagenes.fotos = (Fotografia *)realloc(datos->imagenes.fotos, sizeof(Fotografia) * (datos->imagenes.numImagenes + 1));
+                        }
                         strcpy(datos->imagenes.fotos[datos->imagenes.numImagenes].nomFoto, direntp->d_name);
                         sprintf(datos->imagenes.fotos[datos->imagenes.numImagenes].path, "%s%s", path, direntp->d_name);
 

@@ -153,7 +153,7 @@ void enviarDatosWendy(Datos *datos, int *sockfd)
         }
         write(STDOUT_FILENO, "\n\n", sizeof("\n\n"));
     }
-    for (int i = datos->imagenes.numImagenes - 1; i > 0; i--)
+    for (int i = 0; i < datos->imagenes.numImagenes; i++)
     {
         free(datos->imagenes.fotos[i].md5sum);
         free(datos->imagenes.fotos[i].mida);

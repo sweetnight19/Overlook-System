@@ -7,7 +7,6 @@
 #include <signal.h>
 #include <stdio.h>
 
-
 //Librerias propias
 #include "Configuracion/configuracion.h"
 #include "Cliente/client.h"
@@ -47,7 +46,7 @@ int main(int argc, char *argv[])
     datos = (Datos *)malloc(sizeof(Datos));
     //conexionJack = EXIT_SUCCESS;
     conexionWendy = EXIT_SUCCESS;
-    SEM_init(&sem,1);
+    SEM_init(&sem, 1);
 
     //Comprobamos el argumento que sea correcto
     if (argc != 2)
@@ -116,7 +115,7 @@ int main(int argc, char *argv[])
     }
     if (datos->imagenes.numImagenes > 0)
     {
-        for (int i = datos->imagenes.numImagenes - 1; i > 0; i--)
+        for (int i = 0; i < datos->imagenes.numImagenes; i++)
         {
             free(datos->imagenes.fotos[i].md5sum);
             free(datos->imagenes.fotos[i].mida);
