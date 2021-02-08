@@ -8,128 +8,60 @@ Reg_estacions *trama_estacio;
 semaphore *sem_write;
 semaphore *sem_read;
 
-int numClientes, newsock[NUM_CLIENTES], cerrarThread, sockfd;
+int numClientes, newsock[NUM_CLIENTES], *cerrarThread, sockfd;
 pthread_t threadClientes[NUM_CLIENTES];
 
-void processarLloyd(char buffer[TRAMA], int *int_error, char nom_estacio[TRAMA])
+void processarLloyd(char buffer[TRAMA], char nom_estacio[NOMBRE])
 {
-    int contador = 0;
-    char *data, *hora, *temperatura, *humitat, *pressio_atmosferica, *precipitacio;
-    bool ok = true;
+    int i;
+    char temperatura[TEMPERATURA], humitat[HUMEDAD], pressio_atmosferica[PRESSION], precipitacio[PRECIPITACION];
 
-    while (buffer[contador] != '#')
+    i = 15;
+    for (int j = 0; j < FECHA; i++, j++)
     {
-        data = &buffer[contador];
-        contador++;
+    }
+    i++;
+    i++;
+    for (int j = 0; j < HORA; i++, j++)
+    {
+    }
+    i++;
+    i++;
+    for (int j = 0; j < TEMPERATURA - 1; i++, j++)
+    {
+        temperatura[j] = buffer[i];
+    }
+    i++;
+    i++;
+    for (int j = 0; j < HUMEDAD - 1; i++, j++)
+    {
+        humitat[j] = buffer[i];
+    }
+    i++;
+    i++;
+    for (int j = 0; j < PRESSION; i++, j++)
+    {
+        pressio_atmosferica[j] = buffer[i];
+    }
+    i++;
+    i++;
+    for (int j = 0; j < PRECIPITACION; i++, j++)
+    {
+        precipitacio[j] = buffer[i];
     }
 
-    if (strlen(data) > 10)
-    {
-        ok = false;
-    }
-
-    contador++;
-
-    while (buffer[contador] != '#')
-    {
-        hora = &buffer[contador];
-        contador++;
-    }
-
-    if (strlen(hora) > 8)
-    {
-        ok = false;
-    }
-
-    contador++;
-
-    while (buffer[contador] != '#')
-    {
-        temperatura = &buffer[contador];
-        contador++;
-    }
-
-    if (strlen(temperatura))
-    {
-        ok = false;
-    }
-
-    contador++;
-
-    while (buffer[contador] != '#')
-    {
-        humitat = &buffer[contador];
-        contador++;
-    }
-
-    if (strlen(humitat))
-    {
-        ok = false;
-    }
-
-    contador++;
-
-    while (buffer[contador] != '#')
-    {
-        pressio_atmosferica = &buffer[contador];
-        contador++;
-    }
-
-    if (strlen(pressio_atmosferica))
-    {
-        ok = false;
-    }
-
-    contador++;
-
-    while (buffer[contador] != '#')
-    {
-        precipitacio = &buffer[contador];
-        contador++;
-    }
-
-    if (strlen(precipitacio) > 4)
-    {
-        ok = false;
-    }
-
-    if (ok == true)
-    {
-        int_error = 0;
-
-        char pantalla[TRAMA];
-        //ENVIAR LES DADES A LLOYD
-
-        write(STDOUT_FILENO, "\n$Jack:", sizeof(char) * sizeof("\n$Jack:"));
-        write(STDOUT_FILENO, "\nReceiving data...", sizeof(char) * sizeof("\nReceiving data..."));
-        write(STDOUT_FILENO, nom_estacio, sizeof(&nom_estacio));
-        write(STDOUT_FILENO, "\n", sizeof(char));
-
-        sprintf(pantalla, "%s\n%s\n%s\n%s\n%s\n%s\n", data, hora, temperatura, humitat, pressio_atmosferica, precipitacio);
-        write(STDOUT_FILENO, pantalla, sizeof(char) * strlen(pantalla));
-
-        SEM_wait(sem_write);
-
-        strcpy(trama_estacio->nom_estacio, nom_estacio);
-        trama_estacio->humitat = atof(humitat);
-        trama_estacio->temperatura = atof(temperatura);
-        trama_estacio->precipitacio = atof(precipitacio);
-        trama_estacio->pressio_atmos = atof(pressio_atmosferica);
-
-        SEM_signal(sem_read);
-    }
-    else
-    {
-        //ENVIAR QUE HI HA HAGUT UN ERROR
-        *int_error = 1;
-    }
-}
-
-void signalHandler()
-{
-    write(STDOUT_FILENO, "\nDisconnecting Jack...\n", sizeof("\nDisconnecting Jack...\n"));
-    cerrarThread = EXIT_FAILURE;
-    raise(SIGINT);
+    //ENVIAR LES DADES A LLOYD
+    SEM_wait(sem_write);
+    strcpy(trama_estacio->nom_estacio, nom_estacio);
+    trama_estacio->humitat = atof(humitat);
+    printf("atof(humitat):%f.2\n", atof(humitat));
+    trama_estacio->temperatura = atof(temperatura);
+    printf("atof(temperatura):%f.2\n", atof(temperatura));
+    trama_estacio->precipitacio = atof(precipitacio);
+    printf("atof(precipitacio):%f.2\n", atof(precipitacio));
+    trama_estacio->pressio_atmos = atof(pressio_atmosferica);
+    printf("atof(pressio_atm):%f.2\n", atof(pressio_atmosferica));
+    SEM_signal(sem_read);
 }
 
 void *TareasServidor(void *socket_desc)
@@ -138,7 +70,7 @@ void *TareasServidor(void *socket_desc)
     int *newsock = (int *)socket_desc;
     int enviat = 0, int_error = 0;
     int i;
-    char buffer[TRAMA], buffer2[TRAMA], jack[5], origen[ORIGEN], conexionOK[12], conexionKO[12], dadesOK[9], dadesKO[9], error[15], nom_estacio[TRAMA];
+    char buffer[TRAMA], buffer2[TRAMA], jack[5], origen[ORIGEN], conexionOK[12], conexionKO[12], dadesOK[9], dadesKO[9], error[15], nom_estacio[ORIGEN];
 
     strcpy(jack, "JACK");
     strcpy(conexionOK, "CONNEXIO OK");
@@ -147,10 +79,8 @@ void *TareasServidor(void *socket_desc)
     strcpy(dadesKO, "DADES KO");
     strcpy(error, "ERROR DE TRAMA");
 
-    //sprintf(buffer, "Nueva conexion desde %s:%hu\n", inet_ntoa(c_addr.sin_addr), ntohs(c_addr.sin_port));
-    //write(STDOUT_FILENO, buffer, sizeof(char) * strlen(buffer));
     read(*newsock, buffer, TRAMA);
-    while (buffer[14] != 'Q' && cerrarThread == EXIT_SUCCESS)
+    while (buffer[14] != 'Q' && *cerrarThread == EXIT_SUCCESS)
     {
         //Copiamos el "DANNY"
         for (int i = 0; (i < ORIGEN) && (buffer[i - 1] != 'Y'); ++i)
@@ -176,10 +106,14 @@ void *TareasServidor(void *socket_desc)
             {
                 nom_estacio[j] = buffer[i];
             }
+            write(STDOUT_FILENO, "Nueva connexion: ", sizeof("Nueva connexion: "));
+            write(STDOUT_FILENO, nom_estacio, strlen(nom_estacio));
+            write(STDOUT_FILENO, "\n", sizeof("\n"));
 
             write(STDOUT_FILENO, "Enviando trama de connexion a ", sizeof("Enviando trama de connexion a "));
-            write(STDOUT_FILENO, nom_estacio, sizeof(strlen(nom_estacio)));
+            write(STDOUT_FILENO, nom_estacio, strlen(nom_estacio));
             write(STDOUT_FILENO, "\n", sizeof("\n"));
+
             buffer2[14] = 'O';
             i = 15;
             for (int j = 0; i < TRAMA && j < (int)strlen(conexionOK); i++, j++)
@@ -198,7 +132,7 @@ void *TareasServidor(void *socket_desc)
             {
                 write(STDOUT_FILENO, "Enviando trama de connexion erronea a ",
                       sizeof("Enviando trama de connexion erronea a "));
-                write(STDOUT_FILENO, nom_estacio, sizeof(strlen(nom_estacio)));
+                write(STDOUT_FILENO, nom_estacio, strlen(nom_estacio));
                 write(STDOUT_FILENO, "\n", sizeof("\n"));
                 buffer2[14] = 'E';
                 i = 15;
@@ -217,9 +151,13 @@ void *TareasServidor(void *socket_desc)
         //Responder a la trama de datos
         if (strcmp(origen, "DANNY") == 0 && buffer[14] == 'D')
         {
-            write(STDOUT_FILENO, "Enviando trama de datos a ", sizeof("Enviando trama de datos a "));
-            write(STDOUT_FILENO, nom_estacio, sizeof(strlen(nom_estacio)));
+            write(STDOUT_FILENO, "Recibiendo trama de datos a ", sizeof("Recibiendo trama de datos a "));
+            write(STDOUT_FILENO, nom_estacio, strlen(nom_estacio));
             write(STDOUT_FILENO, "\n", sizeof("\n"));
+
+            //PROCESSAMENT DE LES DADES A ENVIAR A LLOYD
+            processarLloyd(buffer, nom_estacio);
+
             buffer2[14] = 'B';
             i = 15;
             for (int j = 0; i < TRAMA && j < (int)strlen(dadesOK); i++, j++)
@@ -231,10 +169,6 @@ void *TareasServidor(void *socket_desc)
                 buffer2[j] = '\0';
             }
             enviat = 1;
-
-            //PROCESSAMENT DE LES DADES A ENVIAR A LLOYD
-
-            processarLloyd(buffer, &int_error, nom_estacio);
         }
         else
         {
@@ -242,7 +176,7 @@ void *TareasServidor(void *socket_desc)
             {
                 write(STDOUT_FILENO, "Enviando trama de datos erronea a ",
                       sizeof("Enviando trama de datos erronea a "));
-                write(STDOUT_FILENO, nom_estacio, sizeof(strlen(nom_estacio)));
+                write(STDOUT_FILENO, nom_estacio, strlen(nom_estacio));
                 write(STDOUT_FILENO, "\n", sizeof("\n"));
                 buffer2[14] = 'K';
                 i = 15;
@@ -262,7 +196,7 @@ void *TareasServidor(void *socket_desc)
         if (enviat == 0)
         {
             write(STDOUT_FILENO, "Enviando trama erronea a ", sizeof("Enviando trama erronea a "));
-            write(STDOUT_FILENO, nom_estacio, sizeof(strlen(nom_estacio)));
+            write(STDOUT_FILENO, nom_estacio, strlen(nom_estacio));
             write(STDOUT_FILENO, "\n", sizeof("\n"));
             buffer2[14] = 'Z';
             i = 15;
@@ -292,15 +226,19 @@ void *TareasServidor(void *socket_desc)
     return NULL;
 }
 
-void configurarServidor(int portJack)
+void configurarServidor(int portJack, int *cerrar, Reg_estacions *reg_estacions, semaphore *sem_read_1, semaphore *sem_write_1)
 {
     uint16_t port;
     struct sockaddr_in s_addr;
 
-    signal(SIGINT, signalHandler);
     port = portJack;
     numClientes = EXIT_SUCCESS;
-    cerrarThread = EXIT_SUCCESS;
+    cerrarThread = cerrar;
+    trama_estacio = reg_estacions;
+    sem_read = sem_read_1;
+    sem_write = sem_write_1;
+    //*cerrar = EXIT_SUCCESS;
+    //cerrarThread = EXIT_SUCCESS;
 
     sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, IPPROTO_TCP);
     if (sockfd < 0)
@@ -324,7 +262,7 @@ void configurarServidor(int portJack)
     struct sockaddr_in c_addr;
     socklen_t c_len = sizeof(c_addr);
 
-    while (cerrarThread == EXIT_SUCCESS)
+    while (*cerrarThread == EXIT_SUCCESS)
     {
 
         newsock[numClientes] = accept(sockfd, (void *)&c_addr, &c_len);

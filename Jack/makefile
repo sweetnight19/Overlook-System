@@ -8,7 +8,7 @@ configuracion.o: Configuracion/configuracion.c
 	@gcc -c Configuracion/configuracion.c -Wall -Wextra
 	@echo "Compilando configuracion.c"
 
-servidor.o: Servidor/servidor.c Servidor/servidor.h
+servidor.o: Servidor/servidor.c Servidor/servidor.h Semaforo/semaphore.h Lloyd/lloyd.h
 	@gcc -c Servidor/servidor.c -Wall -Wextra -lpthread
 	@echo "Compilando servidor.c"
 

@@ -167,6 +167,11 @@ void enviarDatosJack(Datos *datos, int *sockfd)
     int j;
     char danny[6], buffer[TRAMA];
 
+    for (int i = 0; i < TRAMA; i++)
+    {
+        buffer[i] = '\0';
+    }
+
     strcpy(danny, "DANNY");
     for (int i = 0; i < (int)strlen(danny); i++)
     {
@@ -178,37 +183,46 @@ void enviarDatosJack(Datos *datos, int *sockfd)
     }
     buffer[14] = 'D';
     j = 15;
-    for (int i = 0; i < (int)strlen(datos->fecha); i++, j++)
+    for (int i = 0; i < FECHA; i++, j++)
     {
         buffer[j] = datos->fecha[i];
     }
     buffer[j] = '#';
-    for (int i = 0; i < (int)strlen(datos->hora); i++, j++)
+    j++;
+    for (int i = 0; i < HORA; i++, j++)
     {
         buffer[j] = datos->hora[i];
     }
     buffer[j] = '#';
-    for (int i = 0; i < (int)strlen(datos->temperatura); i++, j++)
+    j++;
+    for (int i = 0; i < TEMPERATURA-1; i++, j++)
     {
         buffer[j] = datos->temperatura[i];
     }
     buffer[j] = '#';
-    for (int i = 0; i < (int)strlen(datos->humedad); i++, j++)
+    j++;
+    for (int i = 0; i < HUMEDAD-1; i++, j++)
     {
         buffer[j] = datos->humedad[i];
     }
     buffer[j] = '#';
-    for (int i = 0; i < (int)strlen(datos->presionAtmosferica); i++, j++)
+    j++;
+    for (int i = 0; i < PRESSION; i++, j++)
     {
         buffer[j] = datos->presionAtmosferica[i];
     }
     buffer[j] = '#';
-    for (int i = 0; i < (int)strlen(datos->precipitacion); i++, j++)
+    j++;
+    for (int i = 0; i < PRECIPITACION; i++, j++)
     {
         buffer[j] = datos->precipitacion[i];
     }
+
+    //Enviamos la trama
     write(STDOUT_FILENO, "\nEnviando datos...\n", sizeof("\nEnviando datos...\n"));
     write(*sockfd, buffer, TRAMA);
+
+    //Respuesta de Jack
     read(*sockfd, buffer, TRAMA);
     for (int j = 15; buffer[j] != '\0'; j++)
     {

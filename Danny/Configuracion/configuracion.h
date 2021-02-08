@@ -59,6 +59,7 @@ typedef struct
     char humedad[HUMEDAD];
     char presionAtmosferica[PRESSION];
     char precipitacion[PRECIPITACION];
+    int hayTXT;
     Imagen imagenes;
 } Datos;
 

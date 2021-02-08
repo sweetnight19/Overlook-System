@@ -1,45 +1,50 @@
 #ifndef LLOYD_H
 #define LLOYD_H
 
+//Librerias del sistema
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
 #include <pthread.h>
 #include <signal.h>
 #include <fcntl.h>
 #include <unistd.h>
-
 #include <sys/stat.h>
 #include <sys/types.h>
 
+//Librerias propias
 #include "../Semaforo/semaphore.h"
-#include "../Servidor/servidor.h"
+//#include "../Servidor/servidor.h"
 
-#define NOM_ESTACIO 150
+//Constantes
+#define NOM_ESTACIO 100
+#define HALLORANT 120
 
-typedef struct{
+//Tipos propios
+typedef struct
+{
     char nom_estacio[NOM_ESTACIO];
     float humitat;
     float temperatura;
     float precipitacio;
     float pressio_atmos;
-}Reg_estacions;
+} Reg_estacions;
 
-
-typedef struct {
+typedef struct
+{
     char nom[NOM_ESTACIO];
     int num_lectures;
     Reg_estacions mitjana_estacions;
-}Estacio;
+} Estacio;
 
-typedef struct {
+typedef struct
+{
     int num_estacions;
-    Estacio* estacions;
-}Estacions;
+    Estacio *estacions;
+} Estacions;
 
-void* lloyd_thread(void* arg);
-void processarDades(Reg_estacions* reg_estacions, semaphore* sem_write, semaphore* sem_read);
+void alarmHandler();
+void processarDades(Reg_estacions *reg_estacions, semaphore *sem_write, semaphore *sem_read);
 
 #endif

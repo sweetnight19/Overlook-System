@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <signal.h>
 #include <sys/ipc.h>
 #include <sys/mman.h>
 
@@ -15,14 +16,25 @@
 #include "Semaforo/semaphore.h"
 
 Configuracion *configuracion;
+int cerrar;
+
+void signalHandler()
+{
+    write(STDOUT_FILENO, "\nDisconnecting Jack...\n", sizeof("\nDisconnecting Jack...\n"));
+    cerrar = EXIT_FAILURE;
+}
 
 int main(int argc, char *argv[])
 {
-
     int conf;
     pid_t pid;
+    Reg_estacions *reg_estacions;
+    semaphore sem_read, sem_write;
+    key_t key_read, key_write;
 
+    cerrar = EXIT_SUCCESS;
     configuracion = (Configuracion *)malloc(sizeof(Configuracion));
+    signal(SIGINT, signalHandler);
 
     //Comprobamos el argumento que sea correcto
     if (argc != 2)
@@ -45,25 +57,16 @@ int main(int argc, char *argv[])
         }
 
         //INICIALITZEM ELS SEMAFORS I EL PROCES DE LLOYD
-
-        Reg_estacions *reg_estacions;
-
-        semaphore sem_read, sem_write;
-        key_t key_read, key_write;
-        int sem;
-
         key_read = ftok("read.txt", 'A');
         key_write = ftok("write.txt", 'B');
 
-        sem = SEM_constructor_with_name(&sem_write, key_write);
-        if (sem < 0)
+        if (SEM_constructor_with_name(&sem_write, key_write) < 0)
         {
             write(STDOUT_FILENO, "\nERROR: No se ha podido crear el semaforo correctamente.\n",
                   sizeof(char) * strlen("\nERROR: No se ha podido crear el semaforo correctamente.\n"));
         }
 
-        sem = SEM_constructor_with_name(&sem_read, key_read);
-        if (sem < 0)
+        if (SEM_constructor_with_name(&sem_read, key_read) < 0)
         {
             write(STDOUT_FILENO, "\nERROR: No se ha podido crear el semaforo correctamente.\n",
                   sizeof(char) * strlen("\nERROR: No se ha podido crear el semaforo correctamente.\n"));
@@ -73,7 +76,6 @@ int main(int argc, char *argv[])
         SEM_init(&sem_read, 0);
 
         //REALITZAR EL MAPEJAT DE LA MEMORIA REQUERIDA (com fer servir malloc)
-
         reg_estacions = mmap(NULL, sizeof(Reg_estacions), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
         pid = fork();
@@ -85,7 +87,6 @@ int main(int argc, char *argv[])
         else if (pid == 0) //ENTREM A LLOYD
         {
             processarDades(reg_estacions, &sem_write, &sem_read);
-
             munmap(reg_estacions, sizeof(reg_estacions));
         }
         else
@@ -97,14 +98,13 @@ int main(int argc, char *argv[])
             write(STDOUT_FILENO, "$Jack:\n", sizeof("$Jack:\n"));
             write(STDOUT_FILENO, "Waiting...\n", sizeof("Waiting...\n"));
 
-            configurarServidor(configuracion->portJack);
+            configurarServidor(configuracion->portJack, &cerrar, reg_estacions, &sem_read, &sem_write);
 
             munmap(reg_estacions, sizeof(reg_estacions));
         }
-
+        free(configuracion);
         SEM_destructor(&sem_read);
         SEM_destructor(&sem_write);
-
         return EXIT_SUCCESS;
     }
 }

@@ -3,15 +3,9 @@
 #include "lloyd.h"
 
 semaphore sem;
-bool flag;
+Estacions estructura_estacions;
 
-/*-------------------------------------------
-*
-           CREACIO LLOYD I EL THREAD
-*
--------------------------------------------*/
-
-void *lloyd_thread(void *arg)
+void alarmHandler()
 {
     Estacions *estructura_estacions, buffer_estructura_estacions;
 
@@ -68,7 +62,7 @@ void *lloyd_thread(void *arg)
                 }
                 sleep(15);
             }
-            
+
             SEM_signal(&sem);
             close(fd);
         }
@@ -77,94 +71,68 @@ void *lloyd_thread(void *arg)
     return NULL;
 }
 
-/*-------------------------------------------
-*
-        PROCESSAMENT DE LES ESTACIONS
-*
--------------------------------------------*/
-
 void processarDades(Reg_estacions *reg_estacions, semaphore *sem_write, semaphore *sem_read)
 {
-    pthread_t thread;
-
-    Estacions estructura_estacions;
-    int int_thread;
-    int posicio = -39;
-
-    flag = true;
-
-    //signal(SIGINT, signalHandler);
-
-    //SEM_constructor(&sem);
+    signal(SIGALRM, estacio);
     SEM_init(&sem, 1);
+    alarm(HALLORANT);
 
     estructura_estacions.num_estacions = 0;
     estructura_estacions.estacions = (Estacio *)malloc(sizeof(Estacio));
 
-    int_thread = pthread_create(&thread, NULL, lloyd_thread, (void *)&estructura_estacions);
-
-    if (int_thread < 0) //No s'ha pogut crear el thread que permet tractar les dades de les estacions
+    do
     {
-        write(STDOUT_FILENO, "\nERROR: No se ha podido crear el thread para tratar las estaciones.\n",
-              sizeof(char) * strlen("\nERROR: No se ha podido crear el thread para tratar las estaciones.\n"));
-    }
-    else
-    { // INICIALITZACIO DEL THREAD EXITOSA
+        SEM_wait(sem_read);
 
-        do
+        for (int i = 0; i < estructura_estacions.num_estacions; i++)
         {
-            SEM_wait(sem_read);
-
-            for (int i = 0; i < estructura_estacions.num_estacions; i++)
+            if (strcmp(reg_estacions->nom_estacio, estructura_estacions.estacions[i].nom) == 0)
             {
-                if (strcmp(reg_estacions->nom_estacio, estructura_estacions.estacions[i].nom) == 0)
-                {
-                    posicio = i;
-                }
-
-                SEM_wait(&sem);
-
-                if (posicio < 0) //SI NO S'HA TROBAT LA POSICIO DE LA ESTACIO DINS L'ARRAY, VOL DIR QUE NO EXISTEIX,
-                                 //PER AIXO ES GUARDEN LES DADES DE LA NOVA ESTACIO DINS L'ARRAY
-                {
-                    estructura_estacions.num_estacions++;
-                    estructura_estacions.estacions = (Estacio *)realloc(estructura_estacions.estacions,
-                                                                        sizeof(Estacio) * estructura_estacions.num_estacions);
-                    strcpy(estructura_estacions.estacions[estructura_estacions.num_estacions].nom, reg_estacions->nom_estacio);
-                    estructura_estacions.estacions[estructura_estacions.num_estacions - 1].num_lectures++;
-                    estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.humitat =
-                        reg_estacions->humitat;
-                    estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.temperatura =
-                        reg_estacions->temperatura;
-                    estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.precipitacio =
-                        reg_estacions->precipitacio;
-                    estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.pressio_atmos =
-                        reg_estacions->pressio_atmos;
-                }
-                else
-                {
-                    estructura_estacions.estacions[posicio].mitjana_estacions.humitat = reg_estacions->humitat;
-                    estructura_estacions.estacions[posicio].mitjana_estacions.temperatura = reg_estacions->temperatura;
-                    estructura_estacions.estacions[posicio].mitjana_estacions.precipitacio = reg_estacions->precipitacio;
-                    estructura_estacions.estacions[posicio].mitjana_estacions.pressio_atmos = reg_estacions->pressio_atmos;
-                    estructura_estacions.estacions[posicio].num_lectures++;
-
-                    posicio = -39;
-                }
-
-                SEM_signal(&sem);
-                SEM_signal(sem_write);
+                posicio = i;
             }
-        } while (flag == true);
 
-        int_thread = pthread_join(thread, NULL);
+            SEM_wait(&sem);
 
-        if (int_thread < 0)
-        {
-            write(STDOUT_FILENO, "\nERROR: No se ha podido cerrar correctamente el thread.\n",
-                  sizeof(char) * strlen("\nERROR: No se ha podido cerrar correctamente el thread.\n"));
+            if (posicio < 0) //SI NO S'HA TROBAT LA POSICIO DE LA ESTACIO DINS L'ARRAY, VOL DIR QUE NO EXISTEIX,
+                             //PER AIXO ES GUARDEN LES DADES DE LA NOVA ESTACIO DINS L'ARRAY
+            {
+                estructura_estacions.num_estacions++;
+                estructura_estacions.estacions = (Estacio *)realloc(estructura_estacions.estacions,
+                                                                    sizeof(Estacio) * estructura_estacions.num_estacions);
+                strcpy(estructura_estacions.estacions[estructura_estacions.num_estacions].nom, reg_estacions->nom_estacio);
+                estructura_estacions.estacions[estructura_estacions.num_estacions - 1].num_lectures++;
+                estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.humitat =
+                    reg_estacions->humitat;
+                estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.temperatura =
+                    reg_estacions->temperatura;
+                estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.precipitacio =
+                    reg_estacions->precipitacio;
+                estructura_estacions.estacions[estructura_estacions.num_estacions - 1].mitjana_estacions.pressio_atmos =
+                    reg_estacions->pressio_atmos;
+            }
+            else
+            {
+                estructura_estacions.estacions[posicio].mitjana_estacions.humitat = reg_estacions->humitat;
+                estructura_estacions.estacions[posicio].mitjana_estacions.temperatura = reg_estacions->temperatura;
+                estructura_estacions.estacions[posicio].mitjana_estacions.precipitacio = reg_estacions->precipitacio;
+                estructura_estacions.estacions[posicio].mitjana_estacions.pressio_atmos = reg_estacions->pressio_atmos;
+                estructura_estacions.estacions[posicio].num_lectures++;
+
+                posicio = -39;
+            }
+
+            SEM_signal(&sem);
+            SEM_signal(sem_write);
         }
+    } while (flag == true);
 
-        SEM_destructor(&sem);
+    int_thread = pthread_join(thread, NULL);
+
+    if (int_thread < 0)
+    {
+        write(STDOUT_FILENO, "\nERROR: No se ha podido cerrar correctamente el thread.\n",
+              sizeof(char) * strlen("\nERROR: No se ha podido cerrar correctamente el thread.\n"));
     }
+
+    SEM_destructor(&sem);
 }
