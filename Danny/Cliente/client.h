@@ -39,6 +39,6 @@ void enviarDatosWendy(Datos *datos, int *sockfd);
 /*
 * Envia la trama de desconexio al servidor indicat per el socket
 */
-void enviarTramaDesconec(int *sockfd2,char *nombre);
+void enviarTramaDesconec(int *sockfd2, char *nombre);
 
 #endif

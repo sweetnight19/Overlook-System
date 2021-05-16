@@ -50,7 +50,7 @@ void lecturaPath(int *conf, Configuracion *configuracion)
     read(*conf, &letra, sizeof(char));
     while (letra != '\n')
     {
-        configuracion->path = (char *)realloc(configuracion->path, sizeof(char) * i);
+        configuracion->path = (char *)realloc(configuracion->path, sizeof(char) * (i + 1));
         configuracion->path[i] = letra;
         i++;
         read(*conf, &letra, sizeof(char));
@@ -291,8 +291,9 @@ void lecturaPrecipitacion(int *txtfd, Datos *datos)
 char *calcularTamanoImagen(Fotografia imagen)
 {
     char *mida, c;
-    int fdpipe[2], pid, byte;
+    int fdpipe[2], pid;
 
+    mida = NULL;
     pipe(fdpipe);
     pid = fork();
     if (pid == 0)
@@ -310,12 +311,11 @@ char *calcularTamanoImagen(Fotografia imagen)
         read(fdpipe[0], &c, sizeof(char));
         mida = (char *)malloc(sizeof(char));
         mida[0] = c;
-        byte = read(fdpipe[0], &c, sizeof(char));
-        for (int i = 0; byte > 0 && c >= '0' && c <= '9'; i++)
+        for (int i = 0; read(fdpipe[0], &c, sizeof(char)) > 0 && c >= '0' && c <= '9';
+             i++)
         {
             mida = (char *)realloc(mida, sizeof(char) * (i + 1));
             mida[i + 1] = c;
-            byte = read(fdpipe[0], &c, sizeof(char));
         }
         close(fdpipe[0]);
     }
@@ -360,7 +360,9 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
     struct dirent *direntp;
 
     datos->imagenes.numImagenes = 0;
-    numArchivos = hayTXT = 0;
+    numArchivos = 0;
+    hayTXT = 0;
+
     //Prompt
     write(STDOUT_FILENO, "$", sizeof("$"));
     write(STDOUT_FILENO, configuracion->nombre, sizeof(configuracion->nombre));
@@ -379,7 +381,6 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
     else
     {
         //Leemos el directorio
-        numArchivos = 0;
         while ((direntp = readdir(directorio)) != NULL)
         {
             //Ignoramos los ficheros "." y ".."
@@ -395,8 +396,8 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
                     direntp->d_name[strlen(direntp->d_name) - 4] == '.')
                 {
                     numArchivos++;
-                    hayTXT = 1;
-                    datos->hayTXT = 1;
+                    hayTXT++;
+                    datos->hayTXT = hayTXT;
                 }
                 //Nos apuntamos si hemos leido un fichero .jpg
                 if (direntp->d_name[strlen(direntp->d_name) - 1] == 'g' &&
@@ -461,16 +462,20 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
                     else
                     {
                         //Hacemos realloc para la nueva foto
-                        datos->imagenes.fotos = (Fotografia *)realloc(datos->imagenes.fotos, sizeof(Fotografia) * (datos->imagenes.numImagenes + 1));
+                        datos->imagenes.fotos = (Fotografia *)realloc(datos->imagenes.fotos, sizeof(Fotografia) *
+                                                                                                 (datos->imagenes.numImagenes +
+                                                                                                  1));
                     }
                     strcpy(datos->imagenes.fotos[datos->imagenes.numImagenes].nomFoto, direntp->d_name);
                     sprintf(datos->imagenes.fotos[datos->imagenes.numImagenes].path, "%s%s", path, direntp->d_name);
 
                     //Miramos el peso de la imagen
-                    datos->imagenes.fotos[datos->imagenes.numImagenes].mida = calcularTamanoImagen(datos->imagenes.fotos[datos->imagenes.numImagenes]);
+                    datos->imagenes.fotos[datos->imagenes.numImagenes].mida = calcularTamanoImagen(
+                        datos->imagenes.fotos[datos->imagenes.numImagenes]);
 
                     //Miramos el md5sum de la imagen
-                    datos->imagenes.fotos[datos->imagenes.numImagenes].md5sum = calcularMd5sum(datos->imagenes.fotos[datos->imagenes.numImagenes]);
+                    datos->imagenes.fotos[datos->imagenes.numImagenes].md5sum = calcularMd5sum(
+                        datos->imagenes.fotos[datos->imagenes.numImagenes]);
                     datos->imagenes.numImagenes++;
                 }
             }
@@ -484,7 +489,7 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos)
     }
     closedir(directorio);
 
-    if (datos->hayTXT > 0)
+    if (datos->hayTXT == 1)
     {
         write(STDOUT_FILENO, "\n", sizeof("\n"));
         write(STDOUT_FILENO, archivoTXT, sizeof(char) * strlen(archivoTXT));

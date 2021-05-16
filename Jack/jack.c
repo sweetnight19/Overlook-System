@@ -20,14 +20,12 @@ int cerrar;
 /*
 * Captura el SIGINT i envia la senyal de apagar a tots els procesos
 */
-void signalHandler()
-{
+void signalHandler() {
     write(STDOUT_FILENO, "\nDisconnecting Jack...\n", sizeof("\nDisconnecting Jack...\n"));
     cerrar = EXIT_FAILURE;
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     int conf;
     pid_t pid;
     Reg_estacions *reg_estacions;
@@ -36,26 +34,28 @@ int main(int argc, char *argv[])
     key_t key_read, key_write;
 
     cerrar = EXIT_SUCCESS;
-    configuracion = (Configuracion *)malloc(sizeof(Configuracion));
+    configuracion = (Configuracion *) malloc(sizeof(Configuracion));
     signal(SIGINT, signalHandler);
 
     //Comprobamos el argumento que sea correcto
-    if (argc != 2)
-    {
+    if (argc != 2) {
         write(STDOUT_FILENO, "ERROR: No has indicado el archivo de configuración\n",
               sizeof("ERROR: No has indicado el archivo de configuración\n"));
+
+        //Lliberar memoria
         free(configuracion);
         return EXIT_FAILURE;
-    }
-    else
-    {
+    } else {
 
         //Comprobamos que exista el fichero de configuracion
         conf = open(argv[1], O_RDONLY);
-        if (conf < 0)
-        {
+        if (conf < 0) {
             write(STDOUT_FILENO, "ERROR: No es correcto el path del archivo de configuración\n",
                   sizeof("ERROR: No es correcto el path del archivo de configuración\n"));
+
+            //Lliberar memoria
+            free(configuracion);
+            close(conf);
             return EXIT_FAILURE;
         }
 
@@ -63,17 +63,23 @@ int main(int argc, char *argv[])
         key_read = ftok("read.txt", 'A');
         key_write = ftok("write.txt", 'B');
 
-        if (SEM_constructor_with_name(&sem_write, key_write) < 0)
-        {
+        if (SEM_constructor_with_name(&sem_write, key_write) < 0) {
             write(STDOUT_FILENO, "\nERROR: No se ha podido crear el semaforo correctamente.\n",
                   sizeof(char) * strlen("\nERROR: No se ha podido crear el semaforo correctamente.\n"));
+
+            //Lliberar memoria
+            free(configuracion);
+            close(conf);
             return EXIT_FAILURE;
         }
 
-        if (SEM_constructor_with_name(&sem_read, key_read) < 0)
-        {
+        if (SEM_constructor_with_name(&sem_read, key_read) < 0) {
             write(STDOUT_FILENO, "\nERROR: No se ha podido crear el semaforo correctamente.\n",
                   sizeof(char) * strlen("\nERROR: No se ha podido crear el semaforo correctamente.\n"));
+
+            //Lliberar memoria
+            free(configuracion);
+            close(conf);
             return EXIT_FAILURE;
         }
 
@@ -88,17 +94,20 @@ int main(int argc, char *argv[])
         {
             write(STDOUT_FILENO, "\nERROR: No se ha podido crear el fork correctamente.\n",
                   sizeof(char) * strlen("\nERROR: No se ha podido crear el fork correctamente.\n"));
+
+            //Lliberar memoria
+            free(configuracion);
+            close(conf);
             return EXIT_FAILURE;
-        }
-        else if (pid == 0) //ENTREM A LLOYD
+        } else if (pid == 0) //ENTREM A LLOYD
         {
             processarDades(reg_estacions, &sem_write, &sem_read, &cerrar);
             munmap(reg_estacions, sizeof(Reg_estacions));
-        }
-        else
-        {
+        } else {
             //Leemos el fichero de configuracion
             lecturaConfiguracion(&conf, configuracion);
+            printf("Config.dat\n\nIP: %s\nPort: %d\n", configuracion->IPJack, configuracion->portJack);
+            close(conf);
 
             write(STDOUT_FILENO, "\nStarting Jack...\n\n", sizeof("\nStarting Jack...\n\n"));
             write(STDOUT_FILENO, "$Jack:\n", sizeof("$Jack:\n"));
@@ -110,6 +119,7 @@ int main(int argc, char *argv[])
 
         //Lliberar memoria
         free(configuracion);
+        close(conf);
         SEM_destructor(&sem_read);
         SEM_destructor(&sem_write);
         return EXIT_SUCCESS;

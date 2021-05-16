@@ -15,35 +15,34 @@
 #include "Configuracion/configuracion.h"
 #include "Servidor/servidor.h"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     int conf;
     Configuracion *configuracion;
 
-    configuracion = (Configuracion *)malloc(sizeof(Configuracion));
+    configuracion = (Configuracion *) malloc(sizeof(Configuracion));
 
     //Comprobamos el argumento que sea correcto
-    if (argc != 2)
-    {
+    if (argc != 2) {
         write(STDOUT_FILENO, "ERROR: No has indicado el archivo de configuración\n",
               sizeof("ERROR: No has indicado el archivo de configuración\n"));
+
+        //Lliberar memoria
+        free(configuracion);
         return EXIT_FAILURE;
-    }
-    else
-    {
+    } else {
         //Comprobamos que exista el fichero de configuracion
         conf = open(argv[1], O_RDONLY);
-        if (conf < 0)
-        {
+        if (conf < 0) {
             write(STDOUT_FILENO, "ERROR: No es correcto el path del archivo de configuración\n",
                   sizeof("ERROR: No es correcto el path del archivo de configuración\n"));
             free(configuracion);
+            close(conf);
             return EXIT_FAILURE;
-        }
-        else
-        {
+        } else {
             //Leemos el fichero de configuracion
             lecturaConfiguracion(&conf, configuracion);
+            printf("Config.dat\n\nIP: %s\nPort: %d\n", configuracion->IPWendy, configuracion->portWendy);
+            close(conf);
             write(STDOUT_FILENO, "\nStarting Wendy...\n\n", sizeof("\nStarting Wendy...\n\n"));
             configurarServidor(configuracion->portWendy);
         }

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" ENABLED="true" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0944786e-369e-4b40-8e69-9d17f818becb" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.vscode/c_cpp_properties.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/c_cpp_properties.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Danny/Cliente/client.c" beforeDir="false" afterPath="$PROJECT_DIR$/Danny/Cliente/client.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Danny/Cliente/client.h" beforeDir="false" afterPath="$PROJECT_DIR$/Danny/Cliente/client.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Danny/Configuracion/configuracion.c" beforeDir="false" afterPath="$PROJECT_DIR$/Danny/Configuracion/configuracion.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Danny/Semaforo/semaphore.c" beforeDir="false" afterPath="$PROJECT_DIR$/Danny/Semaforo/semaphore.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Danny/Semaforo/semaphore.h" beforeDir="false" afterPath="$PROJECT_DIR$/Danny/Semaforo/semaphore.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Danny/danny.c" beforeDir="false" afterPath="$PROJECT_DIR$/Danny/danny.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Jack/Semaforo/semaphore.c" beforeDir="false" afterPath="$PROJECT_DIR$/Jack/Semaforo/semaphore.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Jack/Semaforo/semaphore.h" beforeDir="false" afterPath="$PROJECT_DIR$/Jack/Semaforo/semaphore.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Jack/Servidor/servidor.c" beforeDir="false" afterPath="$PROJECT_DIR$/Jack/Servidor/servidor.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Jack/jack.c" beforeDir="false" afterPath="$PROJECT_DIR$/Jack/jack.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Wendy/Servidor/servidor.c" beforeDir="false" afterPath="$PROJECT_DIR$/Wendy/Servidor/servidor.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Wendy/wendy.c" beforeDir="false" afterPath="$PROJECT_DIR$/Wendy/wendy.c" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="sortByName" value="true" />
+  </component>
+  <component name="ProjectId" id="1sLz3rHmDnvnfiuCK4Yp1jBklJ1" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="cf.first.check.clang-format" value="false" />
+    <property name="cidr.known.project.marker" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.stylelint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.stylelint" value="" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0944786e-369e-4b40-8e69-9d17f818becb" name="Default Changelist" comment="" />
+      <created>1620666464757</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1620666464757</updated>
+      <workItem from="1620666468980" duration="262000" />
+      <workItem from="1620727713450" duration="283000" />
+      <workItem from="1620728027249" duration="86000" />
+      <workItem from="1620728142617" duration="5225000" />
+      <workItem from="1620734529101" duration="528000" />
+      <workItem from="1620748030707" duration="271000" />
+      <workItem from="1620818300489" duration="3098000" />
+      <workItem from="1620844070144" duration="2103000" />
+      <workItem from="1620909573763" duration="358000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
