@@ -44,6 +44,11 @@ void configurarServidor(int portJack);
 void signalHandler();
 
 /*
+* Captura el SIGPIPE
+*/
+void signalPipe();
+
+/*
 * Thread creat a la connexio de un client nou, gestiona les trames i la comunicacio
 */
 void *TareasServidor(void *socket_desc);

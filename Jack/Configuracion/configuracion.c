@@ -10,10 +10,9 @@ void lecturaConfiguracion(int *conf, Configuracion *configuracion) {
 }
 
 void lecturaIPJack(int *conf, Configuracion *configuracion) {
-    int i;
-    char letra;
+    int i = 0;
+    char letra = ' ';
 
-    i = 0;
     read(*conf, &letra, sizeof(char));
     configuracion->IPJack[i] = letra;
     read(*conf, &letra, sizeof(char));
@@ -27,8 +26,8 @@ void lecturaIPJack(int *conf, Configuracion *configuracion) {
 }
 
 void lecturaPuertoJack(int *conf, Configuracion *configuracion) {
-    int byte;
-    char letra;
+    int byte = 0;
+    char letra = ' ';
 
     configuracion->portJack = 0;
     read(*conf, &letra, sizeof(char));

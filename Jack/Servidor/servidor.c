@@ -4,18 +4,24 @@
 
 #include "servidor.h"
 
-Reg_estacions *trama_estacio;
+Reg_estacions *trama_estacio = NULL;
 semaphore *sem_write, *sem_read;
 
-int numClientes, newsock[NUM_CLIENTES], *cerrarThread, sockfd;
+int numClientes = 0;
+int newsock[NUM_CLIENTES];
+int *cerrarThread = NULL;
+int sockfd = -1;
 pthread_t threadClientes[NUM_CLIENTES];
 
 /*
 * Procesa les dades de la trama i escriu en la memoria compartida
 */
 void processarLloyd(char buffer[TRAMA], char nom_estacio[NOMBRE]) {
-    int i;
-    char temperatura[TEMPERATURA], humitat[HUMEDAD], pressio_atmosferica[PRESSION], precipitacio[PRECIPITACION];
+    int i = 0;
+    char temperatura[TEMPERATURA] = " ";
+    char humitat[HUMEDAD] = " ";
+    char pressio_atmosferica[PRESSION] = " ";
+    char precipitacio[PRECIPITACION] = " ";
 
     i = 15;
     for (int j = 0; j < FECHA; i++, j++) {
@@ -65,16 +71,26 @@ void processarLloyd(char buffer[TRAMA], char nom_estacio[NOMBRE]) {
 void *TareasServidor(void *socket_desc) {
     //Get the socket descriptor
     int *newsock = (int *) socket_desc;
-    int enviat = 0, int_error = 0;
-    int i;
-    char buffer[TRAMA], buffer2[TRAMA], jack[5], origen[ORIGEN], conexionOK[12], conexionKO[12], dadesOK[9], dadesKO[9], error[15], nom_estacio[ORIGEN];
+    int enviat = 0;
+    int int_error = 0;
+    int i = 0;
+    char buffer[TRAMA] = " ";
+    char buffer2[TRAMA] = " ";
+    char jack[5] = " ";
+    char origen[ORIGEN] = " ";
+    char conexionOK[12] = " ";
+    char conexionKO[12] = " ";
+    char dadesOK[9] = " ";
+    char dadesKO[9] = " ";
+    char error[15] = " ";
+    char nom_estacio[ORIGEN] = " ";
 
-    strcpy(jack, "JACK");
-    strcpy(conexionOK, "CONNEXIO OK");
-    strcpy(conexionKO, "ERROR");
-    strcpy(dadesOK, "DADES OK");
-    strcpy(dadesKO, "DADES KO");
-    strcpy(error, "ERROR DE TRAMA");
+    strcpy(jack, "JACK\0");
+    strcpy(conexionOK, "CONNEXIO OK\0");
+    strcpy(conexionKO, "ERROR\0");
+    strcpy(dadesOK, "DADES OK\0");
+    strcpy(dadesKO, "DADES KO\0");
+    strcpy(error, "ERROR DE TRAMA\0");
 
     read(*newsock, buffer, TRAMA);
     while (buffer[14] != 'Q' && *cerrarThread == EXIT_SUCCESS) {
@@ -97,11 +113,11 @@ void *TareasServidor(void *socket_desc) {
             for (int j = 0, i = 15; buffer[i] != '\0'; j++, i++) {
                 nom_estacio[j] = buffer[i];
             }
-            write(STDOUT_FILENO, "Nueva connexion: ", sizeof("Nueva connexion: "));
+            write(STDOUT_FILENO, "Nueva connexion: \0", sizeof("Nueva connexion: \0"));
             write(STDOUT_FILENO, nom_estacio, strlen(nom_estacio));
             write(STDOUT_FILENO, "\n", sizeof("\n"));
 
-            write(STDOUT_FILENO, "Enviando trama de connexion a ", sizeof("Enviando trama de connexion a "));
+            write(STDOUT_FILENO, "Enviando trama de connexion a \0", sizeof("Enviando trama de connexion a \0"));
             write(STDOUT_FILENO, nom_estacio, strlen(nom_estacio));
             write(STDOUT_FILENO, "\n", sizeof("\n"));
 
@@ -116,8 +132,8 @@ void *TareasServidor(void *socket_desc) {
             enviat = 1;
         } else {
             if (buffer[14] == 'C') {
-                write(STDOUT_FILENO, "Enviando trama de connexion erronea a ",
-                      sizeof("Enviando trama de connexion erronea a "));
+                write(STDOUT_FILENO, "Enviando trama de connexion erronea a \0",
+                      sizeof("Enviando trama de connexion erronea a \0"));
                 write(STDOUT_FILENO, nom_estacio, strlen(nom_estacio));
                 write(STDOUT_FILENO, "\n", sizeof("\n"));
                 buffer2[14] = 'E';
@@ -134,7 +150,7 @@ void *TareasServidor(void *socket_desc) {
 
         //Responder a la trama de datos
         if (strcmp(origen, "DANNY") == 0 && buffer[14] == 'D') {
-            write(STDOUT_FILENO, "Recibiendo trama de datos a ", sizeof("Recibiendo trama de datos a "));
+            write(STDOUT_FILENO, "Recibiendo trama de datos de \0", sizeof("Recibiendo trama de datos de \0"));
             write(STDOUT_FILENO, nom_estacio, strlen(nom_estacio));
             write(STDOUT_FILENO, "\n", sizeof("\n"));
 
@@ -152,8 +168,8 @@ void *TareasServidor(void *socket_desc) {
             enviat = 1;
         } else {
             if (buffer[14] == 'D' && int_error == 1) {
-                write(STDOUT_FILENO, "Enviando trama de datos erronea a ",
-                      sizeof("Enviando trama de datos erronea a "));
+                write(STDOUT_FILENO, "Enviando trama de datos erronea a \0",
+                      sizeof("Enviando trama de datos erronea a \0"));
                 write(STDOUT_FILENO, nom_estacio, strlen(nom_estacio));
                 write(STDOUT_FILENO, "\n", sizeof("\n"));
                 buffer2[14] = 'K';
@@ -170,7 +186,7 @@ void *TareasServidor(void *socket_desc) {
 
         //Responder a la trama erronea
         if (enviat == 0) {
-            write(STDOUT_FILENO, "Enviando trama erronea a ", sizeof("Enviando trama erronea a "));
+            write(STDOUT_FILENO, "Enviando trama erronea a \0", sizeof("Enviando trama erronea a \0"));
             write(STDOUT_FILENO, nom_estacio, strlen(nom_estacio));
             write(STDOUT_FILENO, "\n", sizeof("\n"));
             buffer2[14] = 'Z';
@@ -188,8 +204,8 @@ void *TareasServidor(void *socket_desc) {
         }
         //Trama de desconnexion
         if (buffer[14] == 'Q') {
-            write(STDOUT_FILENO, "Recibiendo trama de desconexion de ",
-                  sizeof("Recibiendo trama de desconexion de "));
+            write(STDOUT_FILENO, "Recibiendo trama de desconexion de \0",
+                  sizeof("Recibiendo trama de desconexion de \0"));
             write(STDOUT_FILENO, nom_estacio, sizeof(strlen(nom_estacio)));
             write(STDOUT_FILENO, "\n", sizeof("\n"));
         }
@@ -204,7 +220,7 @@ void configurarServidor(int portJack, int *cerrar, Reg_estacions *reg_estacions,
                         semaphore *sem_write_1) {
     struct sockaddr_in s_addr;
 
-    numClientes = EXIT_SUCCESS;
+    numClientes = 0;
     cerrarThread = cerrar;
     trama_estacio = reg_estacions;
     sem_read = sem_read_1;

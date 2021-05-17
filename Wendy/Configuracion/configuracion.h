@@ -16,6 +16,7 @@
 #define IP 16
 #define TRAMA 115
 #define NOMBRE 100
+#define MD5SUM 32
 
 //Tipos propios
 typedef struct

@@ -15,7 +15,7 @@
 #include "Lloyd/lloyd.h"
 #include "Semaforo/semaphore.h"
 
-int cerrar;
+int cerrar = EXIT_SUCCESS;
 
 /*
 * Captura el SIGINT i envia la senyal de apagar a tots els procesos
@@ -26,15 +26,16 @@ void signalHandler() {
 }
 
 int main(int argc, char *argv[]) {
-    int conf;
+    int conf = -1;
     pid_t pid;
-    Reg_estacions *reg_estacions;
-    Configuracion *configuracion;
+    Reg_estacions *reg_estacions = NULL;
+    Configuracion *configuracion = NULL;
     semaphore sem_write, sem_read;
     key_t key_read, key_write;
 
-    cerrar = EXIT_SUCCESS;
     configuracion = (Configuracion *) malloc(sizeof(Configuracion));
+    configuracion->portJack = 0;
+
     signal(SIGINT, signalHandler);
 
     //Comprobamos el argumento que sea correcto

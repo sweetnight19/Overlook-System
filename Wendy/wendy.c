@@ -16,8 +16,8 @@
 #include "Servidor/servidor.h"
 
 int main(int argc, char *argv[]) {
-    int conf;
-    Configuracion *configuracion;
+    int conf = -1;
+    Configuracion *configuracion = NULL;
 
     configuracion = (Configuracion *) malloc(sizeof(Configuracion));
 
@@ -41,7 +41,6 @@ int main(int argc, char *argv[]) {
         } else {
             //Leemos el fichero de configuracion
             lecturaConfiguracion(&conf, configuracion);
-            printf("Config.dat\n\nIP: %s\nPort: %d\n", configuracion->IPWendy, configuracion->portWendy);
             close(conf);
             write(STDOUT_FILENO, "\nStarting Wendy...\n\n", sizeof("\nStarting Wendy...\n\n"));
             configurarServidor(configuracion->portWendy);

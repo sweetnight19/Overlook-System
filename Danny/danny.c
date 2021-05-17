@@ -12,9 +12,11 @@
 #include "Cliente/client.h"
 #include "Semaforo/semaphore.h"
 
-int closeDanny, sockfd, sockfd2;
-Configuracion *configuracion;
-Datos *datos;
+int closeDanny = EXIT_SUCCESS;
+int sockfd = -1;
+int sockfd2 = -1;
+Configuracion *configuracion = NULL;
+Datos *datos = NULL;
 semaphore sem;
 
 /*
@@ -40,19 +42,27 @@ void alarmaHandler() {
 }
 
 int main(int argc, char *argv[]) {
-    int conf, conexionJack, conexionWendy;
+    int conf = -1;
+    int conexionJack = EXIT_SUCCESS;
+    int conexionWendy = EXIT_SUCCESS;
 
-    configuracion = NULL;
-    datos = NULL;
+
 
     //Iniciamos las variables y la memoria dinamica
-    closeDanny = EXIT_SUCCESS;
     signal(SIGINT, signalHandler);
     signal(SIGALRM, alarmaHandler);
     configuracion = (Configuracion *) malloc(sizeof(Configuracion));
+    configuracion->portWendy = 0;
+    configuracion->portJack = 0;
+    configuracion->tiempo = 0;
+    configuracion->path = NULL;
+    memset(configuracion->nombre, '\0', NOMBRE);
+
     datos = (Datos *) malloc(sizeof(Datos));
-    conexionJack = EXIT_SUCCESS;
-    conexionWendy = EXIT_SUCCESS;
+    datos->hayTXT = 0;
+    datos->imagenes.fotos = NULL;
+    datos->imagenes.numImagenes = 0;
+
     SEM_init(&sem, 1);
 
     //Comprobamos el argumento que sea correcto
@@ -78,10 +88,6 @@ int main(int argc, char *argv[]) {
             lecturaConfiguracion(&conf, configuracion);
             alarm(configuracion->tiempo);
             close(conf);
-            printf("Config.dat\n\nNom estacio: %s\nPath: %s\nalarmTemps:%d\nIP Jack: %s\nPort Jack: %d\nIP Wendy: %s\n"
-                   "Port Wendy: %d\n",
-                   configuracion->nombre, configuracion->path, configuracion->tiempo, configuracion->IPJack,
-                   configuracion->portJack, configuracion->IPWendy, configuracion->portWendy);
 
             //Conectamos con los servidores
             write(STDOUT_FILENO, "Connecting Jack...\n\n", sizeof("Connecting Jack...\n\n"));

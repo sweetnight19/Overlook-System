@@ -7,12 +7,13 @@
 * Configuracio del client
 */
 int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre) {
-    int i;
+    int i = 0;
     struct sockaddr_in servaddr;
-    char danny[6], buffer[TRAMA];
+    char danny[6] = "";
+    char buffer[TRAMA] = "";
 
-    strcpy(danny, "DANNY");
-    danny[strlen(danny)] = '\0';
+    strcpy(danny, "DANNY\0");
+    //danny[strlen(danny)] = '\0';
 
     // socket create and varification
     *sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -62,15 +63,19 @@ int configurarCliente(char IPJack[IP], int portJack, int *sockfd, char *nombre) 
 *Encarregada de enviar les imatges al servidor Wendy
 */
 void enviarDatosWendy(Datos *datos, int *sockfd) {
-    int j, fd, num_foto, byte;
-    char buffer[TRAMA], danny[6], lectura[100];
+    int j = 0;
+    int fd = -1;
+    int num_foto = 0;
+    int byte = 0;
+    char buffer[TRAMA] = " ";
+    char danny[6] = " ";
+    char lectura[100] = " ";
 
-    num_foto = 0;
     while (num_foto < datos->imagenes.numImagenes) {
-        strcpy(danny, "DANNY");
-        danny[strlen(danny)] = '\0';
 
-        for (int j = 0; j < (int) strlen("DANNY"); j++) {
+        strcpy(danny, "DANNY\0");
+        danny[strlen(danny)] = '\0';
+        for (int j = 0; j < (int) strlen("DANNY\0"); j++) {
             buffer[j] = danny[j];
         }
         for (int j = (int) strlen(buffer); j < 14; j++) {
@@ -91,7 +96,9 @@ void enviarDatosWendy(Datos *datos, int *sockfd) {
         buffer[j] = '#';
         j++;
         for (int i = 0; i < MD5SUM; i++, j++) {
-            buffer[j] = datos->imagenes.fotos[num_foto].md5sum[i];
+            if (datos->imagenes.fotos[num_foto].md5sum[i] != '\0') {
+                buffer[j] = datos->imagenes.fotos[num_foto].md5sum[i];
+            }
         }
         j++;
         while (j < TRAMA) {
@@ -100,11 +107,17 @@ void enviarDatosWendy(Datos *datos, int *sockfd) {
         }
         //Enviado trama de informacion
         write(*sockfd, buffer, TRAMA);
-
         usleep(ESPERA);
         buffer[14] = 'F';
+
         fd = open(datos->imagenes.fotos[num_foto].path, O_RDONLY);
-        byte = atoi(datos->imagenes.fotos[num_foto].mida);
+        byte = 0;
+        for (int i = 0; i < (int) strlen(datos->imagenes.fotos[num_foto].mida); ++i) {
+            if (datos->imagenes.fotos[num_foto].mida[i] >= '0' && datos->imagenes.fotos[num_foto].mida[i] <= '9') {
+                byte = byte * 10 + datos->imagenes.fotos[num_foto].mida[i] - '0';
+            }
+        }
+        //byte = atoi(datos->imagenes.fotos[num_foto].mida);
         for (int k = 0; byte > 100; k++) {
             byte -= 100;
             read(fd, lectura, 100);
@@ -122,7 +135,7 @@ void enviarDatosWendy(Datos *datos, int *sockfd) {
         }
         write(*sockfd, buffer, TRAMA);
         close(fd);
-        write(STDOUT_FILENO, "Imagen enviada: ", sizeof("Imagen enviada: "));
+        write(STDOUT_FILENO, "Imagen enviada: \0", sizeof("Imagen enviada: \0"));
         write(STDOUT_FILENO, datos->imagenes.fotos[num_foto].nomFoto, sizeof(datos->imagenes.fotos[num_foto].nomFoto));
         write(STDOUT_FILENO, "\n", sizeof("\n"));
         remove(datos->imagenes.fotos[num_foto].path);
@@ -147,14 +160,15 @@ void enviarDatosWendy(Datos *datos, int *sockfd) {
 *Encarregada de enviar les dades al servidor Jack
 */
 void enviarDatosJack(Datos *datos, int *sockfd) {
-    int j;
-    char danny[6], buffer[TRAMA];
+    int j = 0;
+    char danny[6] = " ";
+    char buffer[TRAMA] = " ";
 
     for (int i = 0; i < TRAMA; i++) {
         buffer[i] = '\0';
     }
 
-    strcpy(danny, "DANNY");
+    strcpy(danny, "DANNY\0");
     for (int i = 0; i < (int) strlen(danny); i++) {
         buffer[i] = danny[i];
     }
@@ -208,10 +222,11 @@ void enviarDatosJack(Datos *datos, int *sockfd) {
 * Envia la trama de desconexio al servidor indicat per el socket
 */
 void enviarTramaDesconec(int *sockfd, char *nombre) {
-    int j;
-    char danny[6], buffer[TRAMA];
+    int j = 0;
+    char danny[6] = " ";
+    char buffer[TRAMA] = " ";
 
-    strcpy(danny, "DANNY");
+    strcpy(danny, "DANNY\0");
     for (int i = 0; i < (int) strlen(danny); i++) {
         buffer[i] = danny[i];
     }
