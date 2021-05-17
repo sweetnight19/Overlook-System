@@ -287,8 +287,8 @@ void *TareasServidor(void *socket_desc) {
             write(STDOUT_FILENO, nomEstacio, sizeof(strlen(nomEstacio)));
             write(STDOUT_FILENO, "\n", sizeof("\n"));
         }
+        free(md5sum);
     }
-    free(md5sum);
     return NULL;
 }
 

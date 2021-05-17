@@ -107,7 +107,6 @@ int main(int argc, char *argv[]) {
         } else {
             //Leemos el fichero de configuracion
             lecturaConfiguracion(&conf, configuracion);
-            printf("Config.dat\n\nIP: %s\nPort: %d\n", configuracion->IPJack, configuracion->portJack);
             close(conf);
 
             write(STDOUT_FILENO, "\nStarting Jack...\n\n", sizeof("\nStarting Jack...\n\n"));
