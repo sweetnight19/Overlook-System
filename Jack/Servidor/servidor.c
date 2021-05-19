@@ -30,22 +30,17 @@ void processarLloyd(char buffer[TRAMA], char nom_estacio[NOMBRE]) {
     i++;
     for (int j = 0; j < HORA; i++, j++) {
     }
-    i++;
-    i++;
     for (int j = 0; j < TEMPERATURA - 1; i++, j++) {
         temperatura[j] = buffer[i];
     }
-    i++;
     i++;
     for (int j = 0; j < HUMEDAD - 1; i++, j++) {
         humitat[j] = buffer[i];
     }
     i++;
-    i++;
     for (int j = 0; j < PRESSION; i++, j++) {
         pressio_atmosferica[j] = buffer[i];
     }
-    i++;
     i++;
     for (int j = 0; j < PRECIPITACION; i++, j++) {
         precipitacio[j] = buffer[i];

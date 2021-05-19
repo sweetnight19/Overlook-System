@@ -450,7 +450,7 @@ void comprobarFichero(Configuracion *configuracion, Datos *datos) {
             close(txtfd);
 
             //Eliminamos el fichero .txt despues de la lectura
-            //remove(archivoTXT);
+            remove(archivoTXT);
             write(STDOUT_FILENO, "\n", sizeof("\n"));
         }
     }
