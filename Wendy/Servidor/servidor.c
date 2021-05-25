@@ -7,7 +7,7 @@
 int cerrarThread = EXIT_SUCCESS;
 
 /*
-*Calcula el checksum de la foto per saber si s'ha rebut correctament
+* Calcula el checksum de la foto per saber si s'ha rebut correctament
 */
 char *calcularMd5sum(char *path) {
     char *md5sum = NULL;
@@ -32,6 +32,9 @@ char *calcularMd5sum(char *path) {
     return md5sum;
 }
 
+/*
+* Compara els checksums
+*/
 int checkMD5(char md5_1[MD5SUM], char md5_2[MD5SUM]) {
     int flag = 0;
 
@@ -39,7 +42,6 @@ int checkMD5(char md5_1[MD5SUM], char md5_2[MD5SUM]) {
         if (md5_1[i] == md5_2[i]) {
 
         } else {
-            printf("error: %d '%c' '%c'\n", i, md5_1[i], md5_2[i]);
             flag = 1;
         }
     }
@@ -272,6 +274,7 @@ void *TareasServidor(void *socket_desc) {
                 buffer2[j] = '\0';
             }
         }
+        
         if (enviat == 1) {
             write(*newsock, buffer2, TRAMA);
             write(STDOUT_FILENO, "Waiting...\n", sizeof("Waiting...\n"));
@@ -355,6 +358,7 @@ void configurarServidor(int portJack) {
     for (int i = 0; i < numClientes; i++) {
         pthread_join(threadClientes[i], NULL);
     }
+
     for (int i = 0; i < numClientes; i++) {
         close(newsock[i]);
     }

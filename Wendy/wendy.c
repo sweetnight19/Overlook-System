@@ -48,6 +48,6 @@ int main(int argc, char *argv[]) {
 
         //Lliberar memoria
         free(configuracion);
-        return 0;
+        return EXIT_SUCCESS;
     }
 }
